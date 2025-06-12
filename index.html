@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mummy's Messy Makers - Sensory Play Classes for Babies & Toddlers</title>
+    <meta name="description" content="Interactive sensory play classes for babies and toddlers. Safe, fun, and educational activities that engage all five senses. Book your child's messy adventure today!">
+    <meta name="keywords" content="sensory play, baby classes, toddler activities, messy play, child development, sensory development">
+    <meta name="author" content="Mummy's Messy Makers">
+    
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="Mummy's Messy Makers - Sensory Play Classes">
+    <meta property="og:description" content="Interactive sensory play classes for babies and toddlers">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #FF6B9D;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFE66D;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --background-light: #FFF8F0;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--white);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--white);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a:focus {
+            color: var(--primary-color);
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .mobile-menu {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--white);
+            padding: 120px 2rem 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: slideInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            animation: slideInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--text-dark);
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            animation: slideInUp 1s ease-out 0.4s both;
+            border: 3px solid var(--accent-color);
+        }
+
+        .cta-button:hover, .cta-button:focus {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+            transform: translateY(-3px);
+            outline: none;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Styles */
+        section {
+            padding: 80px 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* About Section */
+        .about {
+            background: var(--background-light);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-text h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Services Section */
+        .services {
+            background: var(--white);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--white);
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .service-card p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .service-age {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Booking Section */
+        .booking {
+            background: var(--background-light);
+        }
+
+        .booking-content {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .booking-form {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover, .submit-btn:focus {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: var(--white);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-right: 1rem;
+            width: 30px;
+        }
+
+        .contact-item p {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            line-height: 50px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .social-link:hover, .social-link:focus {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .about-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .about-features {
+                grid-template-columns: 1fr;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .booking-form {
+                padding: 2rem;
+            }
+        }
+
+        /* Skip link for accessibility */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 8px;
+            text-decoration: none;
+            transition: top 0.3s;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        /* Screen reader only content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <nav role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="#home" class="logo" aria-label="Mummy's Messy Makers Home">Mummy's Messy Makers</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#booking">Booking</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="mobile-menu" id="mobileMenu" aria-label="Open mobile menu">☰</button>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Where Little Hands Create Big Memories</h1>
+                <p>Interactive sensory play classes designed to engage all five senses while supporting your child's development through fun, safe, and messy adventures!</p>
+                <a href="#booking" class="cta-button">Book Your Adventure</a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title">About Mummy's Messy Makers</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Nurturing Development Through Play</h3>
+                        <p>At Mummy's Messy Makers, we believe that learning happens best when children are having fun. Our sensory play classes are carefully designed to stimulate all five senses, promoting cognitive development, fine motor skills, and creativity.</p>
+                        <p>Led by experienced early childhood educators, our sessions provide a safe, supportive environment where babies and toddlers can explore, discover, and develop essential skills through hands-on play experiences.</p>
+                    </div>
+                    <div class="about-features">
+                        <div class="feature-card">
+                            <div class="feature-icon">👶</div>
+                            <h4>Age-Appropriate</h4>
+                            <p>Classes tailored for different developmental stages</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🧠</div>
+                            <h4>Educational</h4>
+                            <p>Activities designed by child development experts</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🛡️</div>
+                            <h4>Safe & Clean</h4>
+                            <p>All materials are non-toxic and child-safe</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">❤️</div>
+                            <h4>Bonding Time</h4>
+                            <p>Perfect opportunity for parent-child interaction</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="services">
+            <div class="container">
+                <h2 class="section-title">Our Classes</h2>
+                <p class="section-subtitle">Each class is designed to engage specific senses and developmental milestones</p>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>Baby Explorers</h3>
+                        <p>Gentle sensory experiences including textured play mats, soft materials, musical instruments, and safe taste exploration. Perfect for developing early sensory awareness.</p>
+                        <span class="service-age">6-12 months</span>
+                    </div>
+                    <div class="service-card">
+                        <h3>Toddler Adventures</h3>
+                        <p>More complex sensory activities including water play, finger painting, playdough, and scented materials. Designed to enhance creativity and fine motor skills.</p>
+                        <span class="service-age">12-24 months</span>
+                    </div>
+                    <div class="service-card">
+                        <h3>Little Scientists</h3>
+                        <p>Interactive experiments with safe kitchen ingredients, color mixing, texture exploration, and simple cause-and-effect activities.</p>
+                        <span class="service-age">2-3 years</span>
+                    </div>
+                    <div class="service-card">
+                        <h3>Creative Mess Makers</h3>
+                        <p>Advanced sensory play including themed activities, collaborative projects, and multi-sensory storytelling experiences.</p>
+                        <span class="service-age">3-4 years</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Section -->
+        <section id="booking" class="booking">
+            <div class="container">
+                <h2 class="section-title">Book Your Class</h2>
+                <div class="booking-content">
+                    <p class="section-subtitle">Ready to let your little one explore and play? Book a class today!</p>
+                    <form class="booking-form" id="bookingForm" novalidate>
+                        <div class="form-group">
+                            <label for="parent-name">Parent/Guardian Name *</label>
+                            <input type="text" id="parent-name" name="parent-name" required aria-describedby="parent-name-error">
+                            <span id="parent-name-error" class="error-message sr-only" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="child-name">Child's Name *</label>
+                            <input type="text" id="child-name" name="child-name" required aria-describedby="child-name-error">
+                            <span id="child-name-error" class="error-message sr-only" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="child-age">Child's Age *</label>
+                            <select id="child-age" name="child-age" required aria-describedby="child-age-error">
+                                <option value="">Select age range</option>
+                                <option value="6-12-months">6-12 months</option>
+                                <option value="12-24-months">12-24 months</option>
+                                <option value="2-3-years">2-3 years</option>
+                                <option value="3-4-years">3-4 years</option>
+                            </select>
+                            <span id="child-age-error" class="error-message sr-only" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="class-type">Preferred Class *</label>
+                            <select id="class-type" name="class-type" required aria-describedby="class-type-error">
+                                <option value="">Select a class</option>
+                                <option value="baby-explorers">Baby Explorers</option>
+                                <option value="toddler-adventures">Toddler Adventures</option>
+                                <option value="little-scientists">Little Scientists</option>
+                                <option value="creative-mess-makers">Creative Mess Makers</option>
+                            </select>
+                            <span id="class-type-error" class="error-message sr-only" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required aria-describedby="email-error">
+                            <span id="email-error" class="error-message sr-only" role="alert"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="special-requirements">Special Requirements or Questions</label>
+                            <textarea id="special-requirements" name="special-requirements" rows="4" placeholder="Any allergies, special needs, or questions you'd like us to know about..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Submit Booking Request</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2 class="section-title">Get In Touch</h2>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <h3>Contact Information</h3>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <p>+44 7123 456 789</p>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">✉️</span>
+                            <p>hello@mummysmessymakers.co.uk</p>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <p>Community Centre<br>123 Play Street<br>London, SW1A 1AA</p>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">🕒</span>
+                            <p>Mon-Fri: 9:00 AM - 5:00 PM<br>Sat: 10:00 AM - 3:00 PM</p>
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-link" aria-label="Facebook">📘</a>
+                            <a href="#" class="social-link" aria-label="Instagram">📷</a>
+                            <a href="#" class="social-link" aria-label="WhatsApp">💬</a>
+                        </div>
+                    </div>
+                    <div class="contact-form">
+                        <h3>Send us a Message</h3>
+                        <form id="contactForm" novalidate>
+                            <div class="form-group">
+                                <label for="contact-name">Name *</label>
+                                <input type="text" id="contact-name" name="contact-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contact-email">Email *</label>
+                                <input type="email" id="contact-email" name="contact-email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message *</label>
+                                <textarea id="message" name="message" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn">Send Message</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mummy's Messy Makers. All rights reserved. | Registered in England & Wales</p>
+            <p>Sensory play classes for babies and toddlers in London</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+
+        // Form validation and submission
+        function validateForm(form) {
+            let isValid = true;
+            const requiredFields = form.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                const errorElement = document.getElementById(field.name + '-error');
+                if (!field.value.trim()) {
+                    if (errorElement) {
+                        errorElement.textContent = 'This field is required';
+                        errorElement.classList.remove('sr-only');
+                    }
+                    field.setAttribute('aria-invalid', 'true');
+                    isValid = false;
+                } else {
+                    if (errorElement) {
+                        errorElement.textContent = '';
+                        errorElement.classList.add('sr-only');
+                    }
+                    field.removeAttribute('aria-invalid');
+                    
+                    // Email validation
+                    if (field.type === 'email' && !field.value.includes('@')) {
+                        if (errorElement) {
+                            errorElement.textContent = 'Please enter a valid email address';
+                            errorElement.classList.remove('sr-only');
+                        }
+                        field.setAttribute('aria-invalid', 'true');
+                        isValid = false;
+                    }
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Booking form submission
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm(this)) {
+                // In a real implementation, you would send this data to your server
+                alert('Thank you for your booking request! We will contact you within 24 hours to confirm your class.');
+                this.reset();
+            }
+        });
+
+        // Contact form submission
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm(this)) {
+                // In a real implementation, you would send this data to your server
+                alert('Thank you for your message! We will get back to you soon.');
+                this.reset();
+            }
+        });
+
+        // Clear error messages when user starts typing
+        document.querySelectorAll('input, select, textarea').forEach(field => {
+            field.addEventListener('input', function() {
+                const errorElement = document.getElementById(this.name + '-error');
+                if (errorElement) {
+                    errorElement.textContent = '';
+                    errorElement.classList.add('sr-only');
+                }
+                this.removeAttribute('aria-invalid');
+            });
+        });
+
+        // Add some animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for scroll animation
+        document.querySelectorAll('.feature-card, .service-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Add focus management for accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+                navLinks.classList.remove('active');
+                mobileMenu.focus();
+            }
+        });
+
+        // Announce page sections to screen readers when navigating
+        const sections = document.querySelectorAll('section[id]');
+        const navItems = document.querySelectorAll('.nav-links a');
+
+        function updateActiveNavItem() {
+            const scrollPosition = window.scrollY + 100;
+            
+            sections.forEach((section, index) => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    navItems.forEach(item => item.classList.remove('active'));
+                    if (navItems[index]) {
+                        navItems[index].classList.add('active');
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveNavItem);
+        
+        // Initialize on load
+        updateActiveNavItem();
+    </script>
+
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Mummy's Messy Makers",
+        "description": "Interactive sensory play classes for babies and toddlers. Safe, fun, and educational activities that engage all five senses.",
+        "url": "https://www.mummysmessymakers.co.uk",
+        "telephone": "+44 7123 456 789",
+        "email": "hello@mummysmessymakers.co.uk",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "123 Play Street",
+            "addressLocality": "London",
+            "postalCode": "SW1A 1AA",
+            "addressCountry": "GB"
+        },
+        "openingHours": [
+            "Mo-Fr 09:00-17:00",
+            "Sa 10:00-15:00"
+        ],
+        "serviceType": "Child Care Services",
+        "areaServed": "London, UK",
+        "priceRange": "££",
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Sensory Play Classes",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Baby Explorers",
+                        "description": "Gentle sensory experiences for babies 6-12 months"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Toddler Adventures",
+                        "description": "Complex sensory activities for toddlers 12-24 months"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Little Scientists",
+                        "description": "Interactive experiments for children 2-3 years"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Creative Mess Makers",
+                        "description": "Advanced sensory play for children 3-4 years"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
