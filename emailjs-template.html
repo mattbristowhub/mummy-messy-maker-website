@@ -1,0 +1,87 @@
+<!-- 
+EMAILJS TEMPLATE EXAMPLE
+Copy this content into your EmailJS email template
+Replace the variables {{variable_name}} with the actual EmailJS template variables
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #FF6B9D, #4ECDC4); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #fff; padding: 30px; border-left: 1px solid #ddd; border-right: 1px solid #ddd; }
+        .booking-details { background: #FFF8F0; padding: 20px; border-radius: 10px; margin: 20px 0; }
+        .footer { background: #f8f9fa; padding: 20px; text-align: center; border-radius: 0 0 10px 10px; font-size: 14px; color: #666; border: 1px solid #ddd; }
+        .highlight { color: #FF6B9D; font-weight: bold; }
+        .instructions { background: #e8f5e8; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .important { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .section { margin-bottom: 20px; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Booking Confirmed!</h1>
+            <p>Your sensory play adventure is booked</p>
+        </div>
+        
+        <div class="content">
+            <h2>Dear {{to_name}},</h2>
+            <p>Thank you for booking a session with <strong>Mummy's Messy Makers</strong>! We're excited to welcome you and {{child_name}} to our sensory play session.</p>
+            
+            <div class="booking-details">
+                <h3>📅 Your Booking Details</h3>
+                <p><strong>Booking ID:</strong> <span class="highlight">{{booking_id}}</span></p>
+                <p><strong>Child:</strong> {{child_name}} ({{child_age}})</p>
+                <p><strong>Date:</strong> {{session_date}}</p>
+                <p><strong>Time:</strong> {{session_time}}</p>
+                <p><strong>Venue:</strong> {{venue_name}}</p>
+                <p><strong>Address:</strong> {{venue_address}}</p>
+                <p><strong>Entry Instructions:</strong> {{venue_entry}}</p>
+                {{#parent_phone}}<p><strong>Your Phone:</strong> {{parent_phone}}</p>{{/parent_phone}}
+                {{#special_requirements}}<p><strong>Special Requirements:</strong> {{special_requirements}}</p>{{/special_requirements}}
+            </div>
+            
+            <div class="important">
+                <h3>⏰ Important Reminder</h3>
+                <p><strong>{{arrival_note}}</strong></p>
+                <p>Late arrivals may not be admitted for safety reasons.</p>
+            </div>
+            
+            <div class="instructions">
+                <div class="section">
+                    <h3>📝 What to Bring</h3>
+                    <p style="white-space: pre-line;">• {{what_to_bring}}</p>
+                </div>
+                
+                <div class="section">
+                    <h3>🎨 What We Provide</h3>
+                    <p style="white-space: pre-line;">• {{what_we_provide}}</p>
+                </div>
+                
+                <div class="section">
+                    <h3>ℹ️ Important Information</h3>
+                    <p style="white-space: pre-line;">• {{important_notes}}</p>
+                </div>
+            </div>
+            
+            <p>If you have any questions or need to make changes to your booking, please don't hesitate to contact us:</p>
+            <p>📞 <strong>+44 7123 456 789</strong><br>
+            ✉️ <strong>hello@mummysmessymakers.co.uk</strong></p>
+            
+            <p>We can't wait to see you both!</p>
+            <p>Best regards,<br><strong>The Mummy's Messy Makers Team</strong></p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Mummy's Messy Makers. All rights reserved.</p>
+            <p>This is an automated confirmation email. Please keep this for your records.</p>
+        </div>
+    </div>
+</body>
+</html>
