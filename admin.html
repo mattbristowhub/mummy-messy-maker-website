@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Mummy's Messy Makers</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .admin-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--background-light);
+        }
+        
+        .admin-section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--background-light);
+            border-radius: 10px;
+        }
+        
+        .admin-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .bookings-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .booking-item {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .booking-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background: var(--accent-color);
+            color: var(--text-dark);
+        }
+        
+        .status-confirmed {
+            background: var(--secondary-color);
+            color: var(--white);
+        }
+        
+        .manage-dates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .venue-management {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .date-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .date-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            background: var(--background-light);
+            border-radius: 8px;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <p>Manage bookings and session dates</p>
+        </div>
+        
+        <div class="admin-section">
+            <h3>Recent Bookings</h3>
+            <div id="bookingsList" class="bookings-list">
+                <!-- Sample booking data -->
+                <div class="booking-item">
+                    <div class="booking-header">
+                        <strong>Sarah Johnson</strong>
+                        <span class="booking-status status-pending">Pending</span>
+                    </div>
+                    <div class="booking-details">
+                        <p><strong>Child:</strong> Emma (2 years)</p>
+                        <p><strong>Session:</strong> Bersted Jubilee Hall - Monday, 24 June 2025</p>
+                        <p><strong>Time:</strong> 10:00am - 11:00am</p>
+                        <p><strong>Email:</strong> sarah.johnson@email.com</p>
+                        <p><strong>Phone:</strong> 07123 456 789</p>
+                    </div>
+                </div>
+                
+                <div class="booking-item">
+                    <div class="booking-header">
+                        <strong>Mike Stevens</strong>
+                        <span class="booking-status status-confirmed">Confirmed</span>
+                    </div>
+                    <div class="booking-details">
+                        <p><strong>Child:</strong> Oliver (18 months)</p>
+                        <p><strong>Session:</strong> Felpham Memorial Village Hall - Friday, 21 June 2025</p>
+                        <p><strong>Time:</strong> 09:30am - 10:30am</p>
+                        <p><strong>Email:</strong> mike.stevens@email.com</p>
+                        <p><strong>Phone:</strong> 07987 654 321</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-section">
+            <h3>Manage Session Dates</h3>
+            <div class="manage-dates">
+                <div class="venue-management">
+                    <h4>Monday - Bersted Jubilee Hall</h4>
+                    <div class="date-list" id="mondayDates">
+                        <!-- Dates will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="venue-management">
+                    <h4>Friday - Felpham Memorial Village Hall</h4>
+                    <div class="date-list" id="fridayDates">
+                        <!-- Dates will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-section">
+            <h3>Session Instructions</h3>
+            <p>Edit the session instructions that appear in the booking modal:</p>
+            
+            <div style="margin-bottom: 2rem;">
+                <h4>What to Bring:</h4>
+                <textarea id="whatToBring" rows="4" style="width: 100%; padding: 1rem; border-radius: 5px; border: 1px solid #ddd;">
+Change of clothes for your little one
+Baby wipes
+Water bottle
+Camera for memories (optional)
+                </textarea>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h4>What We Provide:</h4>
+                <textarea id="whatWeProvide" rows="4" style="width: 100%; padding: 1rem; border-radius: 5px; border: 1px solid #ddd;">
+All sensory play materials
+Protective floor coverings
+Cleaning supplies
+Hand sanitizer
+Paper towels
+                </textarea>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h4>Important Notes:</h4>
+                <textarea id="importantNotes" rows="6" style="width: 100%; padding: 1rem; border-radius: 5px; border: 1px solid #ddd;">
+Sessions are suitable for ages 6 months to 5 years
+Parent/guardian must remain with child at all times
+All materials are non-toxic and child-safe
+Please arrive on time as sessions start promptly
+Late arrivals may not be admitted for safety reasons
+                </textarea>
+            </div>
+            
+            <button class="btn btn-success" onclick="saveInstructions()">Save Instructions</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+    <script>
+        // Admin specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            populateAdminDates();
+        });
+        
+        function populateAdminDates() {
+            const mondayContainer = document.getElementById('mondayDates');
+            const fridayContainer = document.getElementById('fridayDates');
+            
+            if (typeof bookingState !== 'undefined') {
+                // Monday dates
+                const mondayDates = bookingState.availableDates.get('monday') || [];
+                mondayContainer.innerHTML = mondayDates.map(date => {
+                    const dateStr = date.toLocaleDateString('en-GB');
+                    const isBooked = false; // You would check actual booking status here
+                    return `
+                        <div class="date-item">
+                            <span>${dateStr}</span>
+                            <button class="btn ${isBooked ? 'btn-danger' : 'btn-success'}" 
+                                    onclick="toggleDateAvailability('monday', '${date.toISOString()}')">
+                                ${isBooked ? 'Remove' : 'Available'}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Friday dates
+                const fridayDates = bookingState.availableDates.get('friday') || [];
+                fridayContainer.innerHTML = fridayDates.map(date => {
+                    const dateStr = date.toLocaleDateString('en-GB');
+                    const isBooked = false; // You would check actual booking status here
+                    return `
+                        <div class="date-item">
+                            <span>${dateStr}</span>
+                            <button class="btn ${isBooked ? 'btn-danger' : 'btn-success'}" 
+                                    onclick="toggleDateAvailability('friday', '${date.toISOString()}')">
+                                ${isBooked ? 'Remove' : 'Available'}
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+        
+        function toggleDateAvailability(venue, dateIso) {
+            // In a real implementation, this would update the server
+            alert(`Toggle availability for ${venue} on ${new Date(dateIso).toLocaleDateString('en-GB')}`);
+        }
+        
+        function saveInstructions() {
+            // In a real implementation, this would save to server
+            alert('Instructions saved! (In a real implementation, this would be saved to a database)');
+        }
+    </script>
+</body>
+</html>

@@ -118,8 +118,52 @@
             <div class="container">
                 <h2 class="section-title">Book Your Class</h2>
                 <div class="booking-content">
-                    <p class="section-subtitle">Ready to let your little one explore and play? Book a class today!</p>
+                    <p class="section-subtitle">Ready to let your little one explore and play? Choose your preferred day and session!</p>
+                    
+                    <!-- New Booking System -->
+                    <div id="bookingSystem" class="booking-system">
+                        <!-- Venue Selection -->
+                        <div class="venue-selection">
+                            <h3>Choose Your Preferred Day</h3>
+                            <div class="venue-options">
+                                <button class="venue-option" data-venue="monday">
+                                    <div class="venue-day">Monday</div>
+                                    <div class="venue-name">Bersted Jubilee Hall</div>
+                                    <div class="venue-time">10:00am - 11:00am</div>
+                                    <div class="venue-address">PO21 5TU</div>
+                                </button>
+                                <button class="venue-option" data-venue="friday">
+                                    <div class="venue-day">Friday</div>
+                                    <div class="venue-name">Felpham Memorial Village Hall</div>
+                                    <div class="venue-time">09:30am - 10:30am</div>
+                                    <div class="venue-address">PO22 7DZ</div>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Calendar Section -->
+                        <div class="calendar-section" style="display: none;">
+                            <h3>Select a Date</h3>
+                            <div id="calendar" class="calendar"></div>
+                        </div>
+                    </div>
                     <form class="booking-form" id="bookingForm" novalidate>
+                        <!-- Hidden fields for selected session -->
+                        <input type="hidden" id="selected-venue" name="selected-venue" value="">
+                        <input type="hidden" id="selected-date" name="selected-date" value="">
+                        <input type="hidden" id="selected-time" name="selected-time" value="">
+                        <input type="hidden" id="selected-address" name="selected-address" value="">
+                        
+                        <!-- Selected session display -->
+                        <div id="selected-session-display" class="selected-session" style="display: none;">
+                            <h4>Selected Session</h4>
+                            <div class="session-summary">
+                                <p><strong>Venue:</strong> <span id="display-venue"></span></p>
+                                <p><strong>Date:</strong> <span id="display-date"></span></p>
+                                <p><strong>Time:</strong> <span id="display-time"></span></p>
+                            </div>
+                        </div>
+                        
                         <div class="form-group">
                             <label for="parent-name">Parent/Guardian Name *</label>
                             <input type="text" id="parent-name" name="parent-name" required aria-describedby="parent-name-error">
@@ -132,25 +176,9 @@
                         </div>
                         <div class="form-group">
                             <label for="child-age">Child's Age *</label>
-                            <select id="child-age" name="child-age" required aria-describedby="child-age-error">
-                                <option value="">Select age range</option>
-                                <option value="6-12-months">6-12 months</option>
-                                <option value="12-24-months">12-24 months</option>
-                                <option value="2-3-years">2-3 years</option>
-                                <option value="3-4-years">3-4 years</option>
-                            </select>
+                            <input type="text" id="child-age" name="child-age" required aria-describedby="child-age-error" placeholder="e.g., 18 months, 2 years">
                             <span id="child-age-error" class="error-message sr-only" role="alert"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="class-type">Preferred Class *</label>
-                            <select id="class-type" name="class-type" required aria-describedby="class-type-error">
-                                <option value="">Select a class</option>
-                                <option value="baby-explorers">Baby Explorers</option>
-                                <option value="toddler-adventures">Toddler Adventures</option>
-                                <option value="little-scientists">Little Scientists</option>
-                                <option value="creative-mess-makers">Creative Mess Makers</option>
-                            </select>
-                            <span id="class-type-error" class="error-message sr-only" role="alert"></span>
+                            <small class="form-help">Our sessions are suitable for ages 6 months to 5 years</small>
                         </div>
                         <div class="form-group">
                             <label for="email">Email Address *</label>
@@ -230,6 +258,14 @@
         </div>
     </footer>
 
+    <!-- Session Modal -->
+    <div id="sessionModal" class="session-modal" style="display: none;">
+        <!-- Modal content will be populated by JavaScript -->
+    </div>
+
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    
     <!-- JavaScript -->
     <script src="script.js"></script>
 
