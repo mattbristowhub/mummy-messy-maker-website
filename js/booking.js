@@ -96,15 +96,15 @@ function initializeSessionBookings() {
     // Add random sample bookings to demonstrate capacity
     allMondayDates.forEach((date, index) => {
         const dateStr = date.toISOString().split('T')[0];
-        // Create varying occupancy levels for demonstration
-        const bookingCount = Math.floor(Math.random() * 12); // 0-11 bookings
+        // Create varying occupancy levels for demonstration (0 to maxCapacity-1)
+        const bookingCount = Math.floor(Math.random() * BOOKING_CONFIG.maxCapacity);
         mondayBookings.set(dateStr, bookingCount);
     });
     
     allFridayDates.forEach((date, index) => {
         const dateStr = date.toISOString().split('T')[0];
-        // Create varying occupancy levels for demonstration
-        const bookingCount = Math.floor(Math.random() * 12); // 0-11 bookings
+        // Create varying occupancy levels for demonstration (0 to maxCapacity-1)
+        const bookingCount = Math.floor(Math.random() * BOOKING_CONFIG.maxCapacity);
         fridayBookings.set(dateStr, bookingCount);
     });
     
