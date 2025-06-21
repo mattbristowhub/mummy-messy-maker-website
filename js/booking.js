@@ -1,0 +1,310 @@
+// Mummy's Messy Makers - Booking System
+
+import { BOOKING_CONFIG } from './config.js';
+
+// Booking System State
+export const bookingState = {
+    selectedVenue: null,
+    selectedDate: null,
+    availableDates: new Map(), // venue -> array of dates
+    bookedDates: new Map(), // venue -> array of booked dates
+    currentMonth: new Date().getMonth(),
+    currentYear: new Date().getFullYear()
+};
+
+// DOM Elements (booking-specific)
+export const bookingElements = {
+    bookingSystem: null,
+    venueSelector: null,
+    calendar: null,
+    sessionModal: null
+};
+
+// Initialize booking system
+export function initializeBookingSystem() {
+    bookingElements.bookingSystem = document.getElementById('bookingSystem');
+    bookingElements.venueSelector = document.getElementById('venueSelector');
+    bookingElements.calendar = document.getElementById('calendar');
+    bookingElements.sessionModal = document.getElementById('sessionModal');
+    
+    generateAvailableDates();
+    setupBookingEventListeners();
+}
+
+// Generate available dates for both venues
+function generateAvailableDates() {
+    const today = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 3); // 3 months ahead
+    
+    const mondayDates = [];
+    const fridayDates = [];
+    
+    // Generate Mondays
+    let current = new Date(today);
+    while (current.getDay() !== 1) {
+        current.setDate(current.getDate() + 1);
+    }
+    
+    while (current <= endDate) {
+        if (current >= today) {
+            mondayDates.push(new Date(current));
+        }
+        current.setDate(current.getDate() + 7);
+    }
+    
+    // Generate Fridays
+    current = new Date(today);
+    while (current.getDay() !== 5) {
+        current.setDate(current.getDate() + 1);
+    }
+    
+    while (current <= endDate) {
+        if (current >= today) {
+            fridayDates.push(new Date(current));
+        }
+        current.setDate(current.getDate() + 7);
+    }
+    
+    bookingState.availableDates.set('monday', mondayDates);
+    bookingState.availableDates.set('friday', fridayDates);
+    
+    // Initialize some sample booked dates
+    bookingState.bookedDates.set('monday', []);
+    bookingState.bookedDates.set('friday', []);
+}
+
+// Setup booking system event listeners
+function setupBookingEventListeners() {
+    // Venue selection
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('[data-venue]')) {
+            selectVenue(e.target.dataset.venue);
+        }
+        
+        if (e.target.matches('[data-date]')) {
+            selectDate(e.target.dataset.date, e.target.dataset.venue);
+        }
+        
+        if (e.target.matches('.session-modal-close')) {
+            closeSessionModal();
+        }
+        
+        if (e.target.matches('#sessionModal')) {
+            closeSessionModal();
+        }
+    });
+}
+
+// Select venue and show calendar
+function selectVenue(venueKey) {
+    bookingState.selectedVenue = venueKey;
+    document.querySelectorAll('[data-venue]').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    document.querySelector(`[data-venue="${venueKey}"]`).classList.add('selected');
+    
+    renderCalendar(venueKey);
+    showCalendarSection();
+}
+
+// Render calendar for selected venue
+function renderCalendar(venueKey) {
+    const calendar = bookingElements.calendar;
+    if (!calendar) return;
+    
+    const venue = BOOKING_CONFIG.venues[venueKey];
+    const availableDates = bookingState.availableDates.get(venueKey) || [];
+    const bookedDates = bookingState.bookedDates.get(venueKey) || [];
+    
+    calendar.innerHTML = `
+        <div class="calendar-header">
+            <h3>${venue.name} - ${venue.day}s</h3>
+            <p class="calendar-time">${venue.time}</p>
+        </div>
+        <div class="calendar-grid">
+            ${availableDates.map(date => {
+                const dateStr = date.toISOString().split('T')[0];
+                const isBooked = bookedDates.some(bookedDate => 
+                    bookedDate.toISOString().split('T')[0] === dateStr
+                );
+                const isPast = date < new Date().setHours(0,0,0,0);
+                
+                return `
+                    <div class="calendar-date ${isBooked ? 'booked' : ''} ${isPast ? 'past' : ''}" 
+                         data-date="${dateStr}" 
+                         data-venue="${venueKey}"
+                         ${!isBooked && !isPast ? '' : 'disabled'}>
+                        <div class="date-number">${date.getDate()}</div>
+                        <div class="date-month">${date.toLocaleDateString('en-GB', {month: 'short'})}</div>
+                        <div class="date-status">
+                            ${isBooked ? 'Booked' : isPast ? 'Past' : 'Available'}
+                        </div>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+}
+
+// Show calendar section
+function showCalendarSection() {
+    const calendarSection = document.querySelector('.calendar-section');
+    if (calendarSection) {
+        calendarSection.style.display = 'block';
+        calendarSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Select date and show session details
+function selectDate(dateStr, venueKey) {
+    const date = new Date(dateStr + 'T12:00:00');
+    bookingState.selectedDate = date;
+    showSessionModal(venueKey, date);
+}
+
+// Show session details modal
+function showSessionModal(venueKey, date) {
+    const venue = BOOKING_CONFIG.venues[venueKey];
+    const modal = bookingElements.sessionModal;
+    if (!modal) return;
+    
+    const formattedDate = date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    modal.innerHTML = `
+        <div class="session-modal-content">
+            <button class="session-modal-close" aria-label="Close modal">&times;</button>
+            <div class="session-details">
+                <h3>Session Details</h3>
+                <div class="session-info">
+                    <div class="info-item">
+                        <strong>Date:</strong> ${formattedDate}
+                    </div>
+                    <div class="info-item">
+                        <strong>Time:</strong> ${venue.time}
+                    </div>
+                    <div class="info-item">
+                        <strong>Venue:</strong> ${venue.name}
+                    </div>
+                    <div class="info-item">
+                        <strong>Address:</strong> ${venue.address}
+                    </div>
+                    <div class="info-item">
+                        <strong>Entry:</strong> ${venue.entry}
+                    </div>
+                    <div class="info-item">
+                        <strong>Age Range:</strong> ${BOOKING_CONFIG.ageRange}
+                    </div>
+                </div>
+                
+                <div class="session-instructions">
+                    <details class="instruction-section">
+                        <summary>What to Bring</summary>
+                        <ul>
+                            ${BOOKING_CONFIG.instructions.whatToBring.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </details>
+                    
+                    <details class="instruction-section">
+                        <summary>What We Provide</summary>
+                        <ul>
+                            ${BOOKING_CONFIG.instructions.whatWeProvide.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    </details>
+                    
+                    <details class="instruction-section">
+                        <summary>Important Information</summary>
+                        <ul>
+                            ${BOOKING_CONFIG.instructions.importantNotes.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                        <div class="arrival-note">
+                            <strong>Arrival:</strong> ${venue.arrivalNote}
+                        </div>
+                    </details>
+                </div>
+                
+                <div class="booking-actions">
+                    <button class="book-session-btn" onclick="window.proceedToBooking()">
+                        Book This Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Close session modal
+export function closeSessionModal() {
+    const modal = bookingElements.sessionModal;
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Show booking confirmation form
+export function showBookingForm() {
+    const bookingSection = document.getElementById('booking');
+    if (bookingSection) {
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+        
+        // Pre-populate form with selected session details
+        const venue = BOOKING_CONFIG.venues[bookingState.selectedVenue];
+        const dateStr = bookingState.selectedDate.toLocaleDateString('en-GB');
+        const formattedDate = bookingState.selectedDate.toLocaleDateString('en-GB', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        // Update form to show selected session
+        const formTitle = document.querySelector('#booking .section-title');
+        if (formTitle) {
+            formTitle.textContent = `Confirm Your Booking`;
+        }
+        
+        // Populate hidden fields
+        document.getElementById('selected-venue').value = venue.name;
+        document.getElementById('selected-date').value = dateStr;
+        document.getElementById('selected-time').value = venue.time;
+        document.getElementById('selected-address').value = venue.address;
+        
+        // Show session summary
+        document.getElementById('display-venue').textContent = venue.name;
+        document.getElementById('display-date').textContent = formattedDate;
+        document.getElementById('display-time').textContent = venue.time;
+        document.getElementById('selected-session-display').style.display = 'block';
+    }
+}
+
+// Reset booking state
+export function resetBookingState() {
+    bookingState.selectedVenue = null;
+    bookingState.selectedDate = null;
+    
+    // Reset venue selection
+    document.querySelectorAll('[data-venue]').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    
+    // Hide calendar
+    const calendarSection = document.querySelector('.calendar-section');
+    if (calendarSection) {
+        calendarSection.style.display = 'none';
+    }
+    
+    // Reset form title
+    const formTitle = document.querySelector('#booking .section-title');
+    if (formTitle) {
+        formTitle.textContent = 'Book Your Class';
+    }
+}
