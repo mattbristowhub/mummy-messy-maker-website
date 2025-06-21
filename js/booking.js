@@ -9,6 +9,7 @@ export const bookingState = {
     selectedDate: null,
     availableDates: new Map(), // venue -> array of dates
     bookedDates: new Map(), // venue -> array of booked dates
+    sessionBookings: new Map(), // venue -> Map<dateStr, bookingCount>
     currentMonth: new Date().getMonth(),
     currentYear: new Date().getFullYear()
 };
@@ -73,6 +74,58 @@ function generateAvailableDates() {
     // Initialize some sample booked dates
     bookingState.bookedDates.set('monday', []);
     bookingState.bookedDates.set('friday', []);
+    
+    // Initialize session booking counts with sample data
+    initializeSessionBookings();
+}
+
+// Initialize session booking counts with sample data
+function initializeSessionBookings() {
+    const mondayBookings = new Map();
+    const fridayBookings = new Map();
+    
+    // Add some sample bookings for demonstration
+    const today = new Date();
+    const nextWeek = new Date(today);
+    nextWeek.setDate(today.getDate() + 7);
+    
+    // Sample: Some sessions have different booking counts
+    const allMondayDates = bookingState.availableDates.get('monday') || [];
+    const allFridayDates = bookingState.availableDates.get('friday') || [];
+    
+    // Add random sample bookings to demonstrate capacity
+    allMondayDates.forEach((date, index) => {
+        const dateStr = date.toISOString().split('T')[0];
+        // Create varying occupancy levels for demonstration
+        const bookingCount = Math.floor(Math.random() * 12); // 0-11 bookings
+        mondayBookings.set(dateStr, bookingCount);
+    });
+    
+    allFridayDates.forEach((date, index) => {
+        const dateStr = date.toISOString().split('T')[0];
+        // Create varying occupancy levels for demonstration
+        const bookingCount = Math.floor(Math.random() * 12); // 0-11 bookings
+        fridayBookings.set(dateStr, bookingCount);
+    });
+    
+    bookingState.sessionBookings.set('monday', mondayBookings);
+    bookingState.sessionBookings.set('friday', fridayBookings);
+}
+
+// Get spaces remaining for a session
+function getSpacesRemaining(venueKey, dateStr) {
+    const maxCapacity = BOOKING_CONFIG.maxCapacity;
+    const venueBookings = bookingState.sessionBookings.get(venueKey);
+    
+    if (!venueBookings) return maxCapacity;
+    
+    const currentBookings = venueBookings.get(dateStr) || 0;
+    return Math.max(0, maxCapacity - currentBookings);
+}
+
+// Check if session is full
+function isSessionFull(venueKey, dateStr) {
+    return getSpacesRemaining(venueKey, dateStr) === 0;
 }
 
 // Setup booking system event listeners
@@ -132,9 +185,11 @@ function renderCalendar(venueKey) {
                 const isPast = date < new Date().setHours(0,0,0,0);
                 const isBankHoliday = isDateBlockedForBankHoliday(date);
                 const bankHolidayName = getBankHolidayName(date);
-                const isDisabled = isBooked || isPast || isBankHoliday;
+                const spacesRemaining = getSpacesRemaining(venueKey, dateStr);
+                const isFull = isSessionFull(venueKey, dateStr);
+                const isDisabled = isBooked || isPast || isBankHoliday || isFull;
                 
-                let statusText = 'Available';
+                let statusText = `${spacesRemaining} spaces left`;
                 let statusClass = '';
                 
                 if (isPast) {
@@ -146,6 +201,11 @@ function renderCalendar(venueKey) {
                 } else if (isBankHoliday) {
                     statusText = 'Bank Holiday';
                     statusClass = 'bank-holiday';
+                } else if (isFull) {
+                    statusText = 'Full';
+                    statusClass = 'full';
+                } else if (spacesRemaining <= 3) {
+                    statusClass = 'low-availability';
                 }
                 
                 return `
@@ -159,6 +219,7 @@ function renderCalendar(venueKey) {
                         <div class="date-status">
                             ${statusText}
                         </div>
+                        ${!isPast && !isBooked && !isBankHoliday && !isFull ? `<div class="spaces-indicator">${spacesRemaining}/15</div>` : ''}
                     </div>
                 `;
             }).join('')}
@@ -195,11 +256,28 @@ function showSessionModal(venueKey, date) {
         day: 'numeric'
     });
     
+    const dateStr = date.toISOString().split('T')[0];
+    const spacesRemaining = getSpacesRemaining(venueKey, dateStr);
+    const maxCapacity = BOOKING_CONFIG.maxCapacity;
+    const currentBookings = maxCapacity - spacesRemaining;
+    
     modal.innerHTML = `
         <div class="session-modal-content">
             <button class="session-modal-close" aria-label="Close modal">&times;</button>
             <div class="session-details">
                 <h3>Session Details</h3>
+                
+                <div class="capacity-info">
+                    <div class="capacity-display">
+                        <span class="spaces-remaining">${spacesRemaining}</span>
+                        <span class="capacity-text">spaces remaining</span>
+                        <div class="capacity-bar">
+                            <div class="capacity-filled" style="width: ${(currentBookings / maxCapacity) * 100}%"></div>
+                        </div>
+                        <div class="capacity-numbers">${currentBookings}/${maxCapacity} booked</div>
+                    </div>
+                </div>
+                
                 <div class="session-info">
                     <div class="info-item">
                         <strong>Date:</strong> ${formattedDate}

@@ -518,7 +518,7 @@ section {
     font-weight: 600;
 }
 
-.calendar-date:not(.booked):not(.past):not(.bank-holiday) .date-status {
+.calendar-date:not(.booked):not(.past):not(.bank-holiday):not(.full) .date-status {
     background: var(--accent-color);
     color: var(--text-dark);
 }
@@ -536,6 +536,35 @@ section {
 .calendar-date.bank-holiday .date-status {
     background: #FFB3B3;
     color: #CC0000;
+}
+
+.calendar-date.full {
+    background: #F0F0F0;
+    border-color: #CCC;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.calendar-date.full .date-status {
+    background: #DDD;
+    color: #666;
+}
+
+.calendar-date.low-availability {
+    border-color: #FF9500;
+    background: #FFF8E1;
+}
+
+.calendar-date.low-availability .date-status {
+    background: #FFE0B2;
+    color: #E65100;
+}
+
+.spaces-indicator {
+    font-size: 0.6rem;
+    color: var(--text-light);
+    margin-top: 0.2rem;
+    font-weight: 600;
 }
 
 .booking-content {
@@ -901,6 +930,54 @@ footer {
     color: var(--primary-color);
     margin-bottom: 2rem;
     text-align: center;
+}
+
+.capacity-info {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
+    border-radius: 15px;
+    border: 2px solid #DEE2E6;
+}
+
+.capacity-display {
+    text-align: center;
+}
+
+.spaces-remaining {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: block;
+}
+
+.capacity-text {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.capacity-bar {
+    width: 100%;
+    height: 12px;
+    background: #E9ECEF;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 1rem 0;
+}
+
+.capacity-filled {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.capacity-numbers {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 600;
 }
 
 .session-info {
