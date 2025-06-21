@@ -1,6 +1,7 @@
 // Mummy's Messy Makers - Booking System
 
 import { BOOKING_CONFIG } from './config.js';
+import { isDateBlockedForBankHoliday, getBankHolidayName } from './bank-holidays.js';
 
 // Booking System State
 export const bookingState = {
@@ -129,16 +130,34 @@ function renderCalendar(venueKey) {
                     bookedDate.toISOString().split('T')[0] === dateStr
                 );
                 const isPast = date < new Date().setHours(0,0,0,0);
+                const isBankHoliday = isDateBlockedForBankHoliday(date);
+                const bankHolidayName = getBankHolidayName(date);
+                const isDisabled = isBooked || isPast || isBankHoliday;
+                
+                let statusText = 'Available';
+                let statusClass = '';
+                
+                if (isPast) {
+                    statusText = 'Past';
+                    statusClass = 'past';
+                } else if (isBooked) {
+                    statusText = 'Booked';
+                    statusClass = 'booked';
+                } else if (isBankHoliday) {
+                    statusText = 'Bank Holiday';
+                    statusClass = 'bank-holiday';
+                }
                 
                 return `
-                    <div class="calendar-date ${isBooked ? 'booked' : ''} ${isPast ? 'past' : ''}" 
+                    <div class="calendar-date ${statusClass}" 
                          data-date="${dateStr}" 
                          data-venue="${venueKey}"
-                         ${!isBooked && !isPast ? '' : 'disabled'}>
+                         ${isDisabled ? 'disabled' : ''}
+                         ${isBankHoliday ? `title="${bankHolidayName || 'Bank Holiday'}"` : ''}>
                         <div class="date-number">${date.getDate()}</div>
                         <div class="date-month">${date.toLocaleDateString('en-GB', {month: 'short'})}</div>
                         <div class="date-status">
-                            ${isBooked ? 'Booked' : isPast ? 'Past' : 'Available'}
+                            ${statusText}
                         </div>
                     </div>
                 `;
