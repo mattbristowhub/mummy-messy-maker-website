@@ -85,7 +85,7 @@ function handleBookingSubmission(form) {
 
 // Export functions to global scope for onclick handlers
 window.proceedToBooking = function() {
-    closeSessionModal();
+    closeSessionModal();git 
     showBookingForm();
 };
 
