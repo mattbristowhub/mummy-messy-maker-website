@@ -2,7 +2,7 @@
 
 // Import modules
 import { initializeElements, loadLogos, setupEventListeners, setupScrollAnimations, validateForm, showSuccessMessage, showLoadingMessage, showBookingSuccessMessage, closeSuccessModal } from './js/ui.js';
-import { initializeBookingSystem, bookingState, showBookingForm, resetBookingState, closeSessionModal } from './js/booking.js';
+import { initializeBookingSystem, bookingState, showBookingForm, resetBookingState, closeSessionModal, incrementBookingCount } from './js/booking.js';
 import { sendConfirmationEmail } from './js/email.js';
 import { generateBookingId } from './js/utils.js';
 
@@ -73,6 +73,9 @@ function handleBookingSubmission(form) {
         
         // Show success message
         showBookingSuccessMessage(bookingData);
+        
+        // Increment booking count for the selected session
+        incrementBookingCount(bookingData.venue, bookingData.date);
         
         // Reset form and booking state
         form.reset();
