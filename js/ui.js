@@ -74,24 +74,53 @@ function setupSmoothScrolling() {
 // Form validation
 export function validateForm(form) {
     let isValid = true;
+    const errors = [];
     const requiredFields = form.querySelectorAll('[required]');
+    
+    // Clear previous validation summary
+    hideValidationSummary();
     
     requiredFields.forEach(field => {
         const errorElement = document.getElementById(field.name + '-error');
+        const fieldLabel = form.querySelector(`label[for="${field.id}"]`)?.textContent.replace('*', '').trim();
         
         if (!field.value.trim()) {
-            showFieldError(field, errorElement, 'This field is required');
+            const message = 'This field is required';
+            showFieldError(field, errorElement, message);
+            errors.push(`${fieldLabel}: ${message}`);
             isValid = false;
         } else {
             clearFieldError(field, errorElement);
             
             // Email validation
             if (field.type === 'email' && !isValidEmail(field.value)) {
-                showFieldError(field, errorElement, 'Please enter a valid email address');
+                const message = 'Please enter a valid email address';
+                showFieldError(field, errorElement, message);
+                errors.push(`${fieldLabel}: ${message}`);
                 isValid = false;
+            }
+            
+            // Age validation
+            if (field.name === 'child-age') {
+                if (!isValidAge(field.value)) {
+                    const message = 'Please enter a valid age (e.g., "18 months", "2 years")';
+                    showFieldError(field, errorElement, message);
+                    errors.push(`${fieldLabel}: ${message}`);
+                    isValid = false;
+                }
             }
         }
     });
+    
+    // Show validation summary if there are errors
+    if (!isValid) {
+        showValidationSummary(errors);
+        // Scroll to validation summary
+        const summary = document.getElementById('validation-summary');
+        if (summary) {
+            summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
     
     return isValid;
 }
@@ -114,6 +143,48 @@ function clearFieldError(field, errorElement) {
     field.removeAttribute('aria-invalid');
 }
 
+// Show validation summary
+function showValidationSummary(errors) {
+    const summary = document.getElementById('validation-summary');
+    const errorsList = document.getElementById('validation-errors');
+    
+    if (summary && errorsList) {
+        errorsList.innerHTML = '';
+        errors.forEach(error => {
+            const li = document.createElement('li');
+            li.textContent = error;
+            errorsList.appendChild(li);
+        });
+        summary.classList.add('show');
+    }
+}
+
+// Hide validation summary
+function hideValidationSummary() {
+    const summary = document.getElementById('validation-summary');
+    if (summary) {
+        summary.classList.remove('show');
+    }
+}
+
+// Validate age input
+function isValidAge(ageStr) {
+    if (!ageStr || !ageStr.trim()) return false;
+    
+    const age = ageStr.toLowerCase().trim();
+    
+    // Check for common age formats
+    const agePatterns = [
+        /^\d+\s*(months?|mths?|m)$/,  // "18 months", "6 m"
+        /^\d+\s*(years?|yrs?|y)$/,    // "2 years", "3 y"
+        /^\d+$/,                      // Just a number (assume years)
+        /^\d+\.\d+\s*(years?|yrs?|y)?$/, // "2.5 years"
+        /^\d+\s*-\s*\d+\s*(months?|years?)$/ // "18-24 months"
+    ];
+    
+    return agePatterns.some(pattern => pattern.test(age));
+}
+
 // Show success message
 export function showSuccessMessage(message) {
     // In a real implementation, you might want to show a nicer modal or notification
@@ -126,6 +197,31 @@ function setupFormValidation() {
         field.addEventListener('input', function() {
             const errorElement = document.getElementById(this.name + '-error');
             clearFieldError(this, errorElement);
+            
+            // Hide validation summary when user starts correcting errors
+            const form = this.closest('form');
+            if (form) {
+                const hasErrors = form.querySelectorAll('[aria-invalid="true"]').length > 1;
+                if (!hasErrors) {
+                    hideValidationSummary();
+                }
+            }
+        });
+        
+        // Real-time validation for specific fields
+        field.addEventListener('blur', function() {
+            const errorElement = document.getElementById(this.name + '-error');
+            const fieldLabel = this.closest('form')?.querySelector(`label[for="${this.id}"]`)?.textContent.replace('*', '').trim();
+            
+            if (this.hasAttribute('required') && !this.value.trim()) {
+                showFieldError(this, errorElement, 'This field is required');
+            } else if (this.type === 'email' && this.value && !isValidEmail(this.value)) {
+                showFieldError(this, errorElement, 'Please enter a valid email address');
+            } else if (this.name === 'child-age' && this.value && !isValidAge(this.value)) {
+                showFieldError(this, errorElement, 'Please enter a valid age (e.g., "18 months", "2 years")');
+            } else {
+                clearFieldError(this, errorElement);
+            }
         });
     });
 }

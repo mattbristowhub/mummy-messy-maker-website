@@ -93,19 +93,15 @@ function initializeSessionBookings() {
     const allMondayDates = bookingState.availableDates.get('monday') || [];
     const allFridayDates = bookingState.availableDates.get('friday') || [];
     
-    // Add random sample bookings to demonstrate capacity
+    // Initialize all sessions with 0 bookings (15 spaces available)
     allMondayDates.forEach((date, index) => {
         const dateStr = date.toISOString().split('T')[0];
-        // Create varying occupancy levels for demonstration (0 to maxCapacity-1)
-        const bookingCount = Math.floor(Math.random() * BOOKING_CONFIG.maxCapacity);
-        mondayBookings.set(dateStr, bookingCount);
+        mondayBookings.set(dateStr, 0);
     });
     
     allFridayDates.forEach((date, index) => {
         const dateStr = date.toISOString().split('T')[0];
-        // Create varying occupancy levels for demonstration (0 to maxCapacity-1)
-        const bookingCount = Math.floor(Math.random() * BOOKING_CONFIG.maxCapacity);
-        fridayBookings.set(dateStr, bookingCount);
+        fridayBookings.set(dateStr, 0);
     });
     
     bookingState.sessionBookings.set('monday', mondayBookings);
@@ -128,16 +124,30 @@ function isSessionFull(venueKey, dateStr) {
     return getSpacesRemaining(venueKey, dateStr) === 0;
 }
 
+// Increment booking count for a session
+export function incrementBookingCount(venueKey, dateStr) {
+    const venueBookings = bookingState.sessionBookings.get(venueKey);
+    if (venueBookings) {
+        const currentCount = venueBookings.get(dateStr) || 0;
+        venueBookings.set(dateStr, currentCount + 1);
+        
+        // Update calendar display
+        updateCalendarDisplay();
+    }
+}
+
 // Setup booking system event listeners
 function setupBookingEventListeners() {
     // Venue selection
     document.addEventListener('click', (e) => {
-        if (e.target.matches('[data-venue]')) {
-            selectVenue(e.target.dataset.venue);
+        const venueButton = e.target.closest('[data-venue]');
+        if (venueButton) {
+            selectVenue(venueButton.dataset.venue);
         }
         
-        if (e.target.matches('[data-date]')) {
-            selectDate(e.target.dataset.date, e.target.dataset.venue);
+        const dateButton = e.target.closest('[data-date]');
+        if (dateButton) {
+            selectDate(dateButton.dataset.date, dateButton.dataset.venue);
         }
         
         if (e.target.matches('.session-modal-close')) {
@@ -240,7 +250,63 @@ function showCalendarSection() {
 function selectDate(dateStr, venueKey) {
     const date = new Date(dateStr + 'T12:00:00');
     bookingState.selectedDate = date;
-    showSessionModal(venueKey, date);
+    bookingState.selectedVenue = venueKey;
+    
+    // Add visual feedback - highlight selected date
+    document.querySelectorAll('.calendar-date').forEach(el => el.classList.remove('selected'));
+    const selectedDateElement = document.querySelector(`[data-date="${dateStr}"]`);
+    if (selectedDateElement) {
+        selectedDateElement.classList.add('selected');
+    }
+    
+    // Auto-navigate to booking form after brief delay for visual feedback
+    setTimeout(() => {
+        navigateToBookingForm(venueKey, date);
+    }, 300);
+}
+
+// Navigate to booking form after date selection
+function navigateToBookingForm(venueKey, date) {
+    const venue = BOOKING_CONFIG.venues[venueKey];
+    const formattedDate = date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    
+    // Update selected session display
+    const selectedSessionDisplay = document.getElementById('selected-session-display');
+    if (selectedSessionDisplay) {
+        selectedSessionDisplay.innerHTML = `
+            <div class="selected-session-info">
+                <h4>Selected Session:</h4>
+                <p><strong>${venue.name}</strong></p>
+                <p>${formattedDate}</p>
+                <p>${venue.time}</p>
+                <p>${venue.address}</p>
+            </div>
+        `;
+        selectedSessionDisplay.style.display = 'block';
+    }
+    
+    // Show booking form section
+    const bookingSection = document.querySelector('.booking-section');
+    if (bookingSection) {
+        bookingSection.style.display = 'block';
+        bookingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Set form values
+    const venueInput = document.querySelector('input[name="selected-venue"]');
+    const dateInput = document.querySelector('input[name="selected-date"]');
+    const timeInput = document.querySelector('input[name="selected-time"]');
+    const addressInput = document.querySelector('input[name="selected-address"]');
+    
+    if (venueInput) venueInput.value = venue.name;
+    if (dateInput) dateInput.value = date.toISOString().split('T')[0];
+    if (timeInput) timeInput.value = venue.time;
+    if (addressInput) addressInput.value = venue.address;
 }
 
 // Show session details modal
