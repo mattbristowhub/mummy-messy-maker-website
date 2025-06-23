@@ -27,8 +27,20 @@ export const EMAIL_CONFIG = {
 // {{venue_address}} {{venue_entry}} {{arrival_note}} {{parent_phone}}
 // {{special_requirements}} {{what_to_bring}} {{what_we_provide}} {{important_notes}}
 
-// Booking System Configuration
-export const BOOKING_CONFIG = {
+// Bookwhen Configuration
+export const BOOKWHEN_CONFIG = {
+    // Bookwhen iframe URL
+    iframeUrl: 'https://bookwhen.com/mummysmessymakers/iframe',
+    
+    // iFrame configuration
+    iframe: {
+        width: '100%',
+        height: '900px',
+        border: 'none',
+        borderRadius: '8px'
+    },
+    
+    // Venue information for display (preserved from original config)
     venues: {
         monday: {
             name: 'Bersted Jubilee Hall',
@@ -49,6 +61,8 @@ export const BOOKING_CONFIG = {
             arrivalNote: 'Arrive early for 09:30am prompt start'
         }
     },
+    
+    // Class information
     ageRange: '6 months - 5 years',
     sessionDuration: 60, // minutes
     maxCapacity: 15,

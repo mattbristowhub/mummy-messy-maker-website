@@ -59,9 +59,9 @@
                     </div>
                     <div class="about-features">
                         <div class="feature-card">
-                            <div class="feature-icon">👶</div>
-                            <h4>Age-Appropriate</h4>
-                            <p>Classes tailored for different developmental stages</p>
+                            <div class="feature-icon">⚡</div>
+                            <h4>Inspiring Play</h4>
+                            <p>Messy play that builds curiosity and creativity</p>
                         </div>
                         <div class="feature-card">
                             <div class="feature-icon">🧠</div>
@@ -87,27 +87,23 @@
         <section id="services" class="services">
             <div class="container">
                 <h2 class="section-title">Our Classes</h2>
-                <p class="section-subtitle">Each class is designed to engage specific senses and developmental milestones</p>
+                <p class="section-subtitle">Discover the amazing benefits of messy play for your little one</p>
                 <div class="services-grid">
                     <div class="service-card">
-                        <h3>Baby Explorers</h3>
-                        <p>Gentle sensory experiences including textured play mats, soft materials, musical instruments, and safe taste exploration. Perfect for developing early sensory awareness.</p>
-                        <span class="service-age">6-12 months</span>
+                        <h3>Messy Play Benefits</h3>
+                        <p>⚡ Inspires curiosity, creativity & confidence</p>
                     </div>
                     <div class="service-card">
-                        <h3>Toddler Adventures</h3>
-                        <p>More complex sensory activities including water play, finger painting, playdough, and scented materials. Designed to enhance creativity and fine motor skills.</p>
-                        <span class="service-age">12-24 months</span>
+                        <h3>Fun Learning</h3>
+                        <p>⚡ Makes learning fun through imaginative play</p>
                     </div>
                     <div class="service-card">
-                        <h3>Little Scientists</h3>
-                        <p>Interactive experiments with safe kitchen ingredients, color mixing, texture exploration, and simple cause-and-effect activities.</p>
-                        <span class="service-age">2-3 years</span>
+                        <h3>Skill Development</h3>
+                        <p>⚡ Helps develop fine motor skills and problem solving</p>
                     </div>
                     <div class="service-card">
-                        <h3>Creative Mess Makers</h3>
-                        <p>Advanced sensory play including themed activities, collaborative projects, and multi-sensory storytelling experiences.</p>
-                        <span class="service-age">3-4 years</span>
+                        <h3>Self Expression</h3>
+                        <p>⚡ Encourages self expression and self esteem</p>
                     </div>
                 </div>
             </div>
@@ -118,88 +114,81 @@
             <div class="container">
                 <h2 class="section-title">Book Your Class</h2>
                 <div class="booking-content">
-                    <p class="section-subtitle">Ready to let your little one explore and play? Choose your preferred day and session!</p>
+                    <p class="section-subtitle">Ready to let your little one explore and play? Book directly through our online booking system!</p>
                     
-                    <!-- New Booking System -->
-                    <div id="bookingSystem" class="booking-system">
-                        <!-- Venue Selection -->
-                        <div class="venue-selection">
-                            <h3>Choose Your Preferred Day</h3>
-                            <div class="venue-options">
-                                <button class="venue-option" data-venue="monday">
-                                    <div class="venue-day">Monday</div>
-                                    <div class="venue-name">Bersted Jubilee Hall</div>
-                                    <div class="venue-time">10:00am - 11:00am</div>
-                                    <div class="venue-address">PO21 5TU</div>
-                                </button>
-                                <button class="venue-option" data-venue="friday">
-                                    <div class="venue-day">Friday</div>
-                                    <div class="venue-name">Felpham Memorial Village Hall</div>
-                                    <div class="venue-time">09:30am - 10:30am</div>
-                                    <div class="venue-address">PO22 7DZ</div>
-                                </button>
+                    <!-- Venue Information -->
+                    <div class="venue-info">
+                        <h3>Our Locations</h3>
+                        <div class="venue-cards">
+                            <div class="venue-card">
+                                <h4>Monday Sessions</h4>
+                                <div class="venue-details">
+                                    <p><strong>Bersted Jubilee Hall</strong></p>
+                                    <p>📍 PO21 5TU</p>
+                                    <p>🕘 10:00am - 11:00am</p>
+                                    <p class="venue-note">Main double doors, turn right</p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Calendar Section -->
-                        <div class="calendar-section" style="display: none;">
-                            <h3>Select a Date</h3>
-                            <div id="calendar" class="calendar"></div>
+                            <div class="venue-card">
+                                <h4>Friday Sessions</h4>
+                                <div class="venue-details">
+                                    <p><strong>Felpham Memorial Village Hall</strong></p>
+                                    <p>📍 PO22 7DZ</p>
+                                    <p>🕘 09:30am - 10:30am</p>
+                                    <p class="venue-note">Main double doors into main hall</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <form class="booking-form" id="bookingForm" novalidate>
-                        <!-- Hidden fields for selected session -->
-                        <input type="hidden" id="selected-venue" name="selected-venue" value="">
-                        <input type="hidden" id="selected-date" name="selected-date" value="">
-                        <input type="hidden" id="selected-time" name="selected-time" value="">
-                        <input type="hidden" id="selected-address" name="selected-address" value="">
-                        
-                        <!-- Selected session display -->
-                        <div id="selected-session-display" class="selected-session" style="display: none;">
-                            <h4>Selected Session</h4>
-                            <div class="session-summary">
-                                <p><strong>Venue:</strong> <span id="display-venue"></span></p>
-                                <p><strong>Date:</strong> <span id="display-date"></span></p>
-                                <p><strong>Time:</strong> <span id="display-time"></span></p>
+                    
+                    <!-- Class Information -->
+                    <div class="class-info">
+                        <h3>What to Expect</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <h4>👶 Age Range</h4>
+                                <p>6 months - 5 years</p>
+                            </div>
+                            <div class="info-item">
+                                <h4>👥 Class Size</h4>
+                                <p>Maximum 15 children</p>
+                            </div>
+                            <div class="info-item">
+                                <h4>⏱️ Duration</h4>
+                                <p>60 minutes of fun</p>
                             </div>
                         </div>
-                        
-                        <div id="validation-summary" class="validation-summary">
-                            <h4>Please fix the following errors:</h4>
-                            <ul id="validation-errors"></ul>
+                    </div>
+                    
+                    <!-- What to Bring -->
+                    <div class="bring-info">
+                        <div class="info-section">
+                            <h4>What to Bring</h4>
+                            <ul>
+                                <li>Change of clothes for your little one</li>
+                                <li>Baby wipes</li>
+                                <li>Water bottle</li>
+                                <li>Camera for memories (optional)</li>
+                            </ul>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="parent-name">Parent/Guardian Name *</label>
-                            <input type="text" id="parent-name" name="parent-name" required aria-describedby="parent-name-error">
-                            <span id="parent-name-error" class="error-message sr-only" role="alert"></span>
+                        <div class="info-section">
+                            <h4>What We Provide</h4>
+                            <ul>
+                                <li>All sensory play materials</li>
+                                <li>Protective floor coverings</li>
+                                <li>Cleaning supplies</li>
+                                <li>Hand sanitizer & paper towels</li>
+                            </ul>
                         </div>
-                        <div class="form-group">
-                            <label for="child-name">Child's Name *</label>
-                            <input type="text" id="child-name" name="child-name" required aria-describedby="child-name-error">
-                            <span id="child-name-error" class="error-message sr-only" role="alert"></span>
+                    </div>
+                    
+                    <!-- Bookwhen Booking System -->
+                    <div class="bookwhen-section">
+                        <h3>Book Your Session</h3>
+                        <div id="bookwhen-container" class="bookwhen-container">
+                            <!-- Bookwhen iframe will be inserted here -->
                         </div>
-                        <div class="form-group">
-                            <label for="child-age">Child's Age *</label>
-                            <input type="text" id="child-age" name="child-age" required aria-describedby="child-age-error" placeholder="e.g., 18 months, 2 years">
-                            <span id="child-age-error" class="error-message sr-only" role="alert"></span>
-                            <small class="form-help">Our sessions are suitable for ages 6 months to 5 years</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address *</label>
-                            <input type="email" id="email" name="email" required aria-describedby="email-error">
-                            <span id="email-error" class="error-message sr-only" role="alert"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="special-requirements">Special Requirements or Questions</label>
-                            <textarea id="special-requirements" name="special-requirements" rows="4" placeholder="Any allergies, special needs, or questions you'd like us to know about..."></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn">Submit Booking Request</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </section>
@@ -306,32 +295,32 @@
                     "@type": "Offer",
                     "itemOffered": {
                         "@type": "Service",
-                        "name": "Baby Explorers",
-                        "description": "Gentle sensory experiences for babies 6-12 months"
+                        "name": "Messy Play Benefits",
+                        "description": "Inspires curiosity, creativity & confidence"
                     }
                 },
                 {
                     "@type": "Offer",
                     "itemOffered": {
                         "@type": "Service",
-                        "name": "Toddler Adventures",
-                        "description": "Complex sensory activities for toddlers 12-24 months"
+                        "name": "Fun Learning",
+                        "description": "Makes learning fun through imaginative play"
                     }
                 },
                 {
                     "@type": "Offer",
                     "itemOffered": {
                         "@type": "Service",
-                        "name": "Little Scientists",
-                        "description": "Interactive experiments for children 2-3 years"
+                        "name": "Skill Development",
+                        "description": "Helps develop fine motor skills and problem solving"
                     }
                 },
                 {
                     "@type": "Offer",
                     "itemOffered": {
                         "@type": "Service",
-                        "name": "Creative Mess Makers",
-                        "description": "Advanced sensory play for children 3-4 years"
+                        "name": "Self Expression",
+                        "description": "Encourages self expression and self esteem"
                     }
                 }
             ]
