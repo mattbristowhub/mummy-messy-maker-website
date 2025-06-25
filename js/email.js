@@ -1,6 +1,7 @@
 // Mummy's Messy Makers - Email System
 
-import { EMAIL_CONFIG, BOOKING_CONFIG } from './config.js';
+import { BOOKING_CONFIG_MERGED as BOOKING_CONFIG, CONTACT_CONFIG } from './config.js';
+import { envConfig } from './env-config.js';
 
 // Helper functions for venue details
 function getVenueEntry(venueName) {
@@ -16,13 +17,20 @@ function getVenueArrivalNote(venueName) {
 // Send confirmation email
 export function sendConfirmationEmail(bookingData) {
     const emailContent = generateConfirmationEmailContent(bookingData);
+    const emailConfig = envConfig.getEmailJSConfig();
     
     // Log email content for development
     console.log('Confirmation Email Content:', emailContent);
     
-    if (EMAIL_CONFIG.enabled && typeof emailjs !== 'undefined') {
-        // Initialize EmailJS with your public key
-        emailjs.init(EMAIL_CONFIG.publicKey);
+    // Validate configuration before attempting to send
+    if (!envConfig.validateEmailJSConfig()) {
+        console.warn('EmailJS not properly configured. Please check environment variables.');
+        return;
+    }
+    
+    if (typeof emailjs !== 'undefined') {
+        // Initialize EmailJS with public key from environment
+        emailjs.init(emailConfig.publicKey);
         
         // Format date for email
         const formattedDate = new Date(bookingData.date).toLocaleDateString('en-GB', {
@@ -32,8 +40,8 @@ export function sendConfirmationEmail(bookingData) {
             day: 'numeric'
         });
         
-        // Send email using EmailJS
-        emailjs.send(EMAIL_CONFIG.serviceId, EMAIL_CONFIG.templateId, {
+        // Send email using EmailJS with environment configuration
+        emailjs.send(emailConfig.serviceId, emailConfig.templateId, {
             to_email: bookingData.email,
             to_name: bookingData.parentName,
             subject: emailContent.subject,
@@ -62,11 +70,7 @@ export function sendConfirmationEmail(bookingData) {
             }
         );
     } else {
-        console.log('EmailJS not configured. Email content prepared:', emailContent);
-        // In development/testing, you could show the email content in a modal
-        if (!EMAIL_CONFIG.enabled) {
-            console.warn('EmailJS is disabled. Set EMAIL_CONFIG.enabled = true after configuration.');
-        }
+        console.log('EmailJS library not loaded. Email content prepared:', emailContent);
     }
 }
 
@@ -138,8 +142,8 @@ function generateConfirmationEmailContent(bookingData) {
                     </div>
                     
                     <p>If you have any questions or need to make changes to your booking, please don't hesitate to contact us:</p>
-                    <p>📞 <strong>+44 7123 456 789</strong><br>
-                    ✉️ <strong>hello@mummysmessymakers.co.uk</strong></p>
+                    <p>📞 <strong>${CONTACT_CONFIG.phone.display}</strong><br>
+                    ✉️ <strong>${CONTACT_CONFIG.email.display}</strong></p>
                     
                     <p>We can't wait to see you both!</p>
                     <p>Best regards,<br><strong>The Mummy's Messy Makers Team</strong></p>
@@ -181,8 +185,8 @@ WHAT WE PROVIDE:
 ${BOOKING_CONFIG.instructions.whatWeProvide.map(item => `• ${item}`).join('\n')}
 
 If you have any questions or need to make changes to your booking, please contact us:
-Phone: +44 7123 456 789
-Email: hello@mummysmessymakers.co.uk
+Phone: ${CONTACT_CONFIG.phone.display}
+Email: ${CONTACT_CONFIG.email.display}
 
 We can't wait to see you both!
 

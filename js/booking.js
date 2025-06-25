@@ -1,7 +1,9 @@
 // Mummy's Messy Makers - Booking System
 
-import { BOOKING_CONFIG } from './config.js';
+import { BOOKING_CONFIG_MERGED as BOOKING_CONFIG } from './config.js';
 import { isDateBlockedForBankHoliday, getBankHolidayName } from './bank-holidays.js';
+import { sanitizeHTML, createSafeElement, safeTemplateUpdate } from './security.js';
+import { announceToScreenReader } from './accessibility.js';
 
 // Booking System State
 export const bookingState = {
@@ -168,6 +170,9 @@ function selectVenue(venueKey) {
     });
     document.querySelector(`[data-venue="${venueKey}"]`).classList.add('selected');
     
+    const venue = BOOKING_CONFIG.venues[venueKey];
+    announceToScreenReader(`Selected ${venue.name}. Calendar loaded with available session dates.`);
+    
     renderCalendar(venueKey);
     showCalendarSection();
 }
@@ -181,60 +186,100 @@ function renderCalendar(venueKey) {
     const availableDates = bookingState.availableDates.get(venueKey) || [];
     const bookedDates = bookingState.bookedDates.get(venueKey) || [];
     
-    calendar.innerHTML = `
-        <div class="calendar-header">
-            <h3>${venue.name} - ${venue.day}s</h3>
-            <p class="calendar-time">${venue.time}</p>
-        </div>
-        <div class="calendar-grid">
-            ${availableDates.map(date => {
-                const dateStr = date.toISOString().split('T')[0];
-                const isBooked = bookedDates.some(bookedDate => 
-                    bookedDate.toISOString().split('T')[0] === dateStr
-                );
-                const isPast = date < new Date().setHours(0,0,0,0);
-                const isBankHoliday = isDateBlockedForBankHoliday(date);
-                const bankHolidayName = getBankHolidayName(date);
-                const spacesRemaining = getSpacesRemaining(venueKey, dateStr);
-                const isFull = isSessionFull(venueKey, dateStr);
-                const isDisabled = isBooked || isPast || isBankHoliday || isFull;
-                
-                let statusText = `${spacesRemaining} spaces left`;
-                let statusClass = '';
-                
-                if (isPast) {
-                    statusText = 'Past';
-                    statusClass = 'past';
-                } else if (isBooked) {
-                    statusText = 'Booked';
-                    statusClass = 'booked';
-                } else if (isBankHoliday) {
-                    statusText = 'Bank Holiday';
-                    statusClass = 'bank-holiday';
-                } else if (isFull) {
-                    statusText = 'Full';
-                    statusClass = 'full';
-                } else if (spacesRemaining <= 3) {
-                    statusClass = 'low-availability';
-                }
-                
-                return `
-                    <div class="calendar-date ${statusClass}" 
-                         data-date="${dateStr}" 
-                         data-venue="${venueKey}"
-                         ${isDisabled ? 'disabled' : ''}
-                         ${isBankHoliday ? `title="${bankHolidayName || 'Bank Holiday'}"` : ''}>
-                        <div class="date-number">${date.getDate()}</div>
-                        <div class="date-month">${date.toLocaleDateString('en-GB', {month: 'short'})}</div>
-                        <div class="date-status">
-                            ${statusText}
-                        </div>
-                        ${!isPast && !isBooked && !isBankHoliday && !isFull ? `<div class="spaces-indicator">${spacesRemaining}/15</div>` : ''}
-                    </div>
-                `;
-            }).join('')}
-        </div>
-    `;
+    // Clear calendar
+    calendar.innerHTML = '';
+    
+    // Create calendar header
+    const header = createCalendarHeader(venue);
+    calendar.appendChild(header);
+    
+    // Create calendar grid
+    const grid = createCalendarGrid(venueKey, availableDates, bookedDates);
+    calendar.appendChild(grid);
+}
+
+// Create calendar header safely
+function createCalendarHeader(venue) {
+    const header = createSafeElement('div', '', { class: 'calendar-header' });
+    
+    const title = createSafeElement('h3', `${venue.name} - ${venue.day}s`);
+    const time = createSafeElement('p', venue.time, { class: 'calendar-time' });
+    
+    header.appendChild(title);
+    header.appendChild(time);
+    
+    return header;
+}
+
+// Create calendar grid safely
+function createCalendarGrid(venueKey, availableDates, bookedDates) {
+    const grid = createSafeElement('div', '', { class: 'calendar-grid' });
+    
+    availableDates.forEach(date => {
+        const dateElement = createCalendarDateElement(venueKey, date, bookedDates);
+        grid.appendChild(dateElement);
+    });
+    
+    return grid;
+}
+
+// Create individual calendar date element safely
+function createCalendarDateElement(venueKey, date, bookedDates) {
+    const dateStr = date.toISOString().split('T')[0];
+    const isBooked = bookedDates.some(bookedDate => 
+        bookedDate.toISOString().split('T')[0] === dateStr
+    );
+    const isPast = date < new Date().setHours(0,0,0,0);
+    const isBankHoliday = isDateBlockedForBankHoliday(date);
+    const bankHolidayName = getBankHolidayName(date);
+    const spacesRemaining = getSpacesRemaining(venueKey, dateStr);
+    const isFull = isSessionFull(venueKey, dateStr);
+    const isDisabled = isBooked || isPast || isBankHoliday || isFull;
+    
+    let statusText = `${spacesRemaining} spaces left`;
+    let statusClass = '';
+    
+    if (isPast) {
+        statusText = 'Past';
+        statusClass = 'past';
+    } else if (isBooked) {
+        statusText = 'Booked';
+        statusClass = 'booked';
+    } else if (isBankHoliday) {
+        statusText = 'Bank Holiday';
+        statusClass = 'bank-holiday';
+    } else if (isFull) {
+        statusText = 'Full';
+        statusClass = 'full';
+    } else if (spacesRemaining <= 3) {
+        statusClass = 'low-availability';
+    }
+    
+    const attributes = {
+        class: `calendar-date ${statusClass}`,
+        'data-date': dateStr,
+        'data-venue': venueKey
+    };
+    
+    if (isDisabled) attributes.disabled = 'true';
+    if (isBankHoliday && bankHolidayName) attributes.title = bankHolidayName;
+    
+    const dateElement = createSafeElement('div', '', attributes);
+    
+    const dateNumber = createSafeElement('div', date.getDate().toString(), { class: 'date-number' });
+    const dateMonth = createSafeElement('div', date.toLocaleDateString('en-GB', {month: 'short'}), { class: 'date-month' });
+    const dateStatus = createSafeElement('div', statusText, { class: 'date-status' });
+    
+    dateElement.appendChild(dateNumber);
+    dateElement.appendChild(dateMonth);
+    dateElement.appendChild(dateStatus);
+    
+    if (!isPast && !isBooked && !isBankHoliday && !isFull) {
+        const spacesIndicator = createSafeElement('div', `${spacesRemaining}/15`, { class: 'spaces-indicator' });
+        dateElement.appendChild(spacesIndicator);
+    }
+    
+    return dateElement;
 }
 
 // Show calendar section
@@ -259,6 +304,14 @@ function selectDate(dateStr, venueKey) {
         selectedDateElement.classList.add('selected');
     }
     
+    const venue = BOOKING_CONFIG.venues[venueKey];
+    const formattedDate = date.toLocaleDateString('en-GB', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+    });
+    announceToScreenReader(`Selected ${formattedDate} at ${venue.name}. Proceeding to booking form.`);
+    
     // Auto-navigate to booking form after brief delay for visual feedback
     setTimeout(() => {
         navigateToBookingForm(venueKey, date);
@@ -278,15 +331,25 @@ function navigateToBookingForm(venueKey, date) {
     // Update selected session display
     const selectedSessionDisplay = document.getElementById('selected-session-display');
     if (selectedSessionDisplay) {
-        selectedSessionDisplay.innerHTML = `
-            <div class="selected-session-info">
-                <h4>Selected Session:</h4>
-                <p><strong>${venue.name}</strong></p>
-                <p>${formattedDate}</p>
-                <p>${venue.time}</p>
-                <p>${venue.address}</p>
-            </div>
-        `;
+        selectedSessionDisplay.innerHTML = '';
+        
+        const sessionInfo = createSafeElement('div', '', { class: 'selected-session-info' });
+        const title = createSafeElement('h4', 'Selected Session:');
+        const venueName = createSafeElement('p');
+        const venueStrong = createSafeElement('strong', venue.name);
+        venueName.appendChild(venueStrong);
+        
+        const dateP = createSafeElement('p', formattedDate);
+        const timeP = createSafeElement('p', venue.time);
+        const addressP = createSafeElement('p', venue.address);
+        
+        sessionInfo.appendChild(title);
+        sessionInfo.appendChild(venueName);
+        sessionInfo.appendChild(dateP);
+        sessionInfo.appendChild(timeP);
+        sessionInfo.appendChild(addressP);
+        
+        selectedSessionDisplay.appendChild(sessionInfo);
         selectedSessionDisplay.style.display = 'block';
     }
     
@@ -327,81 +390,180 @@ function showSessionModal(venueKey, date) {
     const maxCapacity = BOOKING_CONFIG.maxCapacity;
     const currentBookings = maxCapacity - spacesRemaining;
     
-    modal.innerHTML = `
-        <div class="session-modal-content">
-            <button class="session-modal-close" aria-label="Close modal">&times;</button>
-            <div class="session-details">
-                <h3>Session Details</h3>
-                
-                <div class="capacity-info">
-                    <div class="capacity-display">
-                        <span class="spaces-remaining">${spacesRemaining}</span>
-                        <span class="capacity-text">spaces remaining</span>
-                        <div class="capacity-bar">
-                            <div class="capacity-filled" style="width: ${(currentBookings / maxCapacity) * 100}%"></div>
-                        </div>
-                        <div class="capacity-numbers">${currentBookings}/${maxCapacity} booked</div>
-                    </div>
-                </div>
-                
-                <div class="session-info">
-                    <div class="info-item">
-                        <strong>Date:</strong> ${formattedDate}
-                    </div>
-                    <div class="info-item">
-                        <strong>Time:</strong> ${venue.time}
-                    </div>
-                    <div class="info-item">
-                        <strong>Venue:</strong> ${venue.name}
-                    </div>
-                    <div class="info-item">
-                        <strong>Address:</strong> ${venue.address}
-                    </div>
-                    <div class="info-item">
-                        <strong>Entry:</strong> ${venue.entry}
-                    </div>
-                    <div class="info-item">
-                        <strong>Age Range:</strong> ${BOOKING_CONFIG.ageRange}
-                    </div>
-                </div>
-                
-                <div class="session-instructions">
-                    <details class="instruction-section">
-                        <summary>What to Bring</summary>
-                        <ul>
-                            ${BOOKING_CONFIG.instructions.whatToBring.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </details>
-                    
-                    <details class="instruction-section">
-                        <summary>What We Provide</summary>
-                        <ul>
-                            ${BOOKING_CONFIG.instructions.whatWeProvide.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    </details>
-                    
-                    <details class="instruction-section">
-                        <summary>Important Information</summary>
-                        <ul>
-                            ${BOOKING_CONFIG.instructions.importantNotes.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                        <div class="arrival-note">
-                            <strong>Arrival:</strong> ${venue.arrivalNote}
-                        </div>
-                    </details>
-                </div>
-                
-                <div class="booking-actions">
-                    <button class="book-session-btn" onclick="window.proceedToBooking()">
-                        Book This Session
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
+    // Create modal content safely
+    modal.innerHTML = '';
+    const modalContent = createSessionModalContent(venue, formattedDate, spacesRemaining, maxCapacity, currentBookings);
+    modal.appendChild(modalContent);
     
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+}
+
+// Create session modal content safely
+function createSessionModalContent(venue, formattedDate, spacesRemaining, maxCapacity, currentBookings) {
+    const content = createSafeElement('div', '', { class: 'session-modal-content' });
+    
+    // Close button
+    const closeBtn = createSafeElement('button', '×', { 
+        class: 'session-modal-close', 
+        'aria-label': 'Close modal' 
+    });
+    
+    // Session details container
+    const details = createSafeElement('div', '', { class: 'session-details' });
+    
+    // Title
+    const title = createSafeElement('h3', 'Session Details');
+    details.appendChild(title);
+    
+    // Capacity info
+    const capacityInfo = createCapacityInfoSection(spacesRemaining, maxCapacity, currentBookings);
+    details.appendChild(capacityInfo);
+    
+    // Session info
+    const sessionInfo = createSessionInfoSection(venue, formattedDate);
+    details.appendChild(sessionInfo);
+    
+    // Instructions
+    const instructions = createInstructionsSection(venue);
+    details.appendChild(instructions);
+    
+    // Booking actions
+    const actions = createBookingActionsSection();
+    details.appendChild(actions);
+    
+    content.appendChild(closeBtn);
+    content.appendChild(details);
+    
+    return content;
+}
+
+// Create capacity info section
+function createCapacityInfoSection(spacesRemaining, maxCapacity, currentBookings) {
+    const capacityInfo = createSafeElement('div', '', { class: 'capacity-info' });
+    const capacityDisplay = createSafeElement('div', '', { class: 'capacity-display' });
+    
+    const spacesRemainingSpan = createSafeElement('span', spacesRemaining.toString(), { class: 'spaces-remaining' });
+    const capacityText = createSafeElement('span', 'spaces remaining', { class: 'capacity-text' });
+    
+    const capacityBar = createSafeElement('div', '', { class: 'capacity-bar' });
+    const capacityFilled = createSafeElement('div', '', { 
+        class: 'capacity-filled',
+        style: `width: ${(currentBookings / maxCapacity) * 100}%`
+    });
+    capacityBar.appendChild(capacityFilled);
+    
+    const capacityNumbers = createSafeElement('div', `${currentBookings}/${maxCapacity} booked`, { class: 'capacity-numbers' });
+    
+    capacityDisplay.appendChild(spacesRemainingSpan);
+    capacityDisplay.appendChild(capacityText);
+    capacityDisplay.appendChild(capacityBar);
+    capacityDisplay.appendChild(capacityNumbers);
+    
+    capacityInfo.appendChild(capacityDisplay);
+    return capacityInfo;
+}
+
+// Create session info section
+function createSessionInfoSection(venue, formattedDate) {
+    const sessionInfo = createSafeElement('div', '', { class: 'session-info' });
+    
+    const infoItems = [
+        { label: 'Date:', value: formattedDate },
+        { label: 'Time:', value: venue.time },
+        { label: 'Venue:', value: venue.name },
+        { label: 'Address:', value: venue.address },
+        { label: 'Entry:', value: venue.entry },
+        { label: 'Age Range:', value: BOOKING_CONFIG.ageRange }
+    ];
+    
+    infoItems.forEach(item => {
+        const infoItem = createSafeElement('div', '', { class: 'info-item' });
+        const label = createSafeElement('strong', item.label);
+        const value = createSafeElement('span', ` ${item.value}`);
+        
+        infoItem.appendChild(label);
+        infoItem.appendChild(value);
+        sessionInfo.appendChild(infoItem);
+    });
+    
+    return sessionInfo;
+}
+
+// Create instructions section
+function createInstructionsSection(venue) {
+    const instructions = createSafeElement('div', '', { class: 'session-instructions' });
+    
+    // What to Bring
+    const bringSection = createInstructionDetailsSection('What to Bring', BOOKING_CONFIG.instructions.whatToBring);
+    instructions.appendChild(bringSection);
+    
+    // What We Provide
+    const provideSection = createInstructionDetailsSection('What We Provide', BOOKING_CONFIG.instructions.whatWeProvide);
+    instructions.appendChild(provideSection);
+    
+    // Important Information
+    const importantSection = createImportantInfoSection(venue);
+    instructions.appendChild(importantSection);
+    
+    return instructions;
+}
+
+// Create instruction details section
+function createInstructionDetailsSection(title, items) {
+    const details = createSafeElement('details', '', { class: 'instruction-section' });
+    const summary = createSafeElement('summary', title);
+    const list = createSafeElement('ul');
+    
+    items.forEach(item => {
+        const listItem = createSafeElement('li', item);
+        list.appendChild(listItem);
+    });
+    
+    details.appendChild(summary);
+    details.appendChild(list);
+    
+    return details;
+}
+
+// Create important info section with arrival note
+function createImportantInfoSection(venue) {
+    const details = createSafeElement('details', '', { class: 'instruction-section' });
+    const summary = createSafeElement('summary', 'Important Information');
+    const list = createSafeElement('ul');
+    
+    BOOKING_CONFIG.instructions.importantNotes.forEach(note => {
+        const listItem = createSafeElement('li', note);
+        list.appendChild(listItem);
+    });
+    
+    const arrivalNote = createSafeElement('div', '', { class: 'arrival-note' });
+    const arrivalLabel = createSafeElement('strong', 'Arrival:');
+    const arrivalText = createSafeElement('span', ` ${venue.arrivalNote}`);
+    
+    arrivalNote.appendChild(arrivalLabel);
+    arrivalNote.appendChild(arrivalText);
+    
+    details.appendChild(summary);
+    details.appendChild(list);
+    details.appendChild(arrivalNote);
+    
+    return details;
+}
+
+// Create booking actions section
+function createBookingActionsSection() {
+    const actions = createSafeElement('div', '', { class: 'booking-actions' });
+    const bookBtn = createSafeElement('button', 'Book This Session', { class: 'book-session-btn' });
+    
+    bookBtn.addEventListener('click', () => {
+        if (window.proceedToBooking) {
+            window.proceedToBooking();
+        }
+    });
+    
+    actions.appendChild(bookBtn);
+    return actions;
 }
 
 // Close session modal
