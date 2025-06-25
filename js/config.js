@@ -1,25 +1,29 @@
 // Mummy's Messy Makers - Configuration
+// This is the main configuration file that imports and re-exports
+// all configuration modules for backwards compatibility
 
-// Main Configuration
-export const CONFIG = {
-    logoPath: 'images/MMM_TRANSPARENT_LOGO.png',
-    animationDuration: 600,
-    scrollOffset: 100
+// Import separate configuration modules
+import { UI_CONFIG } from './config/ui-config.js';
+import { BOOKING_CONFIG } from './config/booking-config.js';
+import { VENUE_CONFIG } from './config/venue-config.js';
+import { BOOKWHEN_CONFIG } from './config/bookwhen-config.js';
+import { CONTACT_CONFIG } from './config/contact-config.js';
+
+// Re-export for backwards compatibility
+export const CONFIG = UI_CONFIG;
+
+// Merge booking and venue configurations
+export const BOOKING_CONFIG_MERGED = {
+    ...BOOKING_CONFIG,
+    venues: VENUE_CONFIG.venues
 };
 
-// EmailJS Configuration - Update these with your EmailJS details
-// SETUP INSTRUCTIONS:
-// 1. Go to https://www.emailjs.com and create free account
-// 2. Add email service (Gmail recommended)
-// 3. Create email template with variables listed below
-// 4. Get Service ID, Template ID, and Public Key from dashboard
-// 5. Update values below and set enabled: true
-export const EMAIL_CONFIG = {
-    serviceId: 'service_zy2pzfb', // From EmailJS dashboard
-    templateId: 'template_8fx9dbj', // From EmailJS dashboard  
-    publicKey: '6w6FB_exinVULW6wL', // From EmailJS dashboard
-    enabled: true // Set to true after setup
-};
+// Export for legacy compatibility (will be deprecated)
+export { BOOKWHEN_CONFIG };
+export { CONTACT_CONFIG };
+
+// DEPRECATED: Use BOOKING_CONFIG_MERGED instead
+export const BOOKING_CONFIG_LEGACY = BOOKING_CONFIG_MERGED;
 
 // EMAIL TEMPLATE VARIABLES (use these in your EmailJS template):
 // {{to_email}} {{to_name}} {{subject}} {{booking_id}} {{child_name}} 
@@ -27,65 +31,14 @@ export const EMAIL_CONFIG = {
 // {{venue_address}} {{venue_entry}} {{arrival_note}} {{parent_phone}}
 // {{special_requirements}} {{what_to_bring}} {{what_we_provide}} {{important_notes}}
 
-// Bookwhen Configuration
-export const BOOKWHEN_CONFIG = {
-    // Bookwhen iframe URL
-    iframeUrl: 'https://bookwhen.com/mummysmessymakers/iframe',
-    
-    // iFrame configuration
-    iframe: {
-        width: '100%',
-        height: '900px',
-        border: 'none',
-        borderRadius: '8px'
-    },
-    
-    // Venue information for display (preserved from original config)
-    venues: {
-        monday: {
-            name: 'Bersted Jubilee Hall',
-            day: 'Monday',
-            time: '10:00am - 11:00am',
-            address: 'PO21 5TU',
-            entry: 'Main double doors, turn right',
-            startTime: '10:00am',
-            arrivalNote: 'Arrive early for 10:00am prompt start'
-        },
-        friday: {
-            name: 'Felpham Memorial Village Hall',
-            day: 'Friday',
-            time: '09:30am - 10:30am',
-            address: 'PO22 7DZ',
-            entry: 'Main double doors into main hall',
-            startTime: '09:30am',
-            arrivalNote: 'Arrive early for 09:30am prompt start'
-        }
-    },
-    
-    // Class information
-    ageRange: '6 months - 5 years',
-    sessionDuration: 60, // minutes
-    maxCapacity: 15,
-    instructions: {
-        whatToBring: [
-            'Change of clothes for your little one',
-            'Baby wipes',
-            'Water bottle',
-            'Camera for memories (optional)'
-        ],
-        whatWeProvide: [
-            'All sensory play materials',
-            'Protective floor coverings',
-            'Cleaning supplies',
-            'Hand sanitizer',
-            'Paper towels'
-        ],
-        importantNotes: [
-            'Sessions are suitable for ages 6 months to 5 years',
-            'Parent/guardian must remain with child at all times',
-            'All materials are non-toxic and child-safe',
-            'Please arrive on time as sessions start promptly',
-            'Late arrivals may not be admitted for safety reasons'
-        ]
-    }
-};
+// EmailJS Configuration - MOVED TO ENVIRONMENT CONFIG
+// SECURITY UPDATE: EmailJS configuration has been moved to environment variables
+// for better security. API keys should not be exposed in client-side code.
+// 
+// SETUP INSTRUCTIONS:
+// 1. Copy .env.example to .env
+// 2. Update the environment variables with your EmailJS details
+// 3. Add meta tags to your HTML to pass config securely to client
+// 4. Use envConfig.getEmailJSConfig() to access configuration
+//
+// For backwards compatibility, EMAIL_CONFIG is still exported from env-config.js

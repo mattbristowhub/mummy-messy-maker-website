@@ -2,6 +2,7 @@
 
 import { CONFIG } from './config.js';
 import { isValidEmail } from './utils.js';
+import { sanitizeHTML, createSafeElement, sanitizeFormData } from './security.js';
 
 // DOM Elements
 export const elements = {
@@ -71,58 +72,99 @@ function setupSmoothScrolling() {
     });
 }
 
-// Form validation
+// Form validation - Main entry point
 export function validateForm(form) {
-    let isValid = true;
-    const errors = [];
-    const requiredFields = form.querySelectorAll('[required]');
+    const validator = new FormValidator(form);
+    return validator.validate();
+}
+
+// Form Validation Service
+class FormValidator {
+    constructor(form) {
+        this.form = form;
+        this.errors = [];
+        this.isValid = true;
+    }
     
-    // Clear previous validation summary
-    hideValidationSummary();
-    
-    requiredFields.forEach(field => {
-        const errorElement = document.getElementById(field.name + '-error');
-        const fieldLabel = form.querySelector(`label[for="${field.id}"]`)?.textContent.replace('*', '').trim();
+    validate() {
+        this.reset();
+        const requiredFields = this.form.querySelectorAll('[required]');
         
-        if (!field.value.trim()) {
-            const message = 'This field is required';
-            showFieldError(field, errorElement, message);
-            errors.push(`${fieldLabel}: ${message}`);
-            isValid = false;
-        } else {
-            clearFieldError(field, errorElement);
-            
-            // Email validation
-            if (field.type === 'email' && !isValidEmail(field.value)) {
-                const message = 'Please enter a valid email address';
-                showFieldError(field, errorElement, message);
-                errors.push(`${fieldLabel}: ${message}`);
-                isValid = false;
-            }
-            
-            // Age validation
-            if (field.name === 'child-age') {
-                if (!isValidAge(field.value)) {
-                    const message = 'Please enter a valid age (e.g., "18 months", "2 years")';
-                    showFieldError(field, errorElement, message);
-                    errors.push(`${fieldLabel}: ${message}`);
-                    isValid = false;
-                }
-            }
-        }
-    });
+        requiredFields.forEach(field => {
+            this.validateField(field);
+        });
+        
+        this.handleValidationResults();
+        return this.isValid;
+    }
     
-    // Show validation summary if there are errors
-    if (!isValid) {
-        showValidationSummary(errors);
-        // Scroll to validation summary
+    reset() {
+        this.errors = [];
+        this.isValid = true;
+        hideValidationSummary();
+    }
+    
+    validateField(field) {
+        const fieldLabel = this.getFieldLabel(field);
+        const errorElement = document.getElementById(field.name + '-error');
+        
+        // Required field validation
+        if (!this.validateRequired(field)) {
+            const message = 'This field is required';
+            this.addError(field, errorElement, fieldLabel, message);
+            return;
+        }
+        
+        // Clear previous errors for valid required fields
+        clearFieldError(field, errorElement);
+        
+        // Type-specific validation
+        this.validateFieldType(field, errorElement, fieldLabel);
+    }
+    
+    validateRequired(field) {
+        return field.value.trim().length > 0;
+    }
+    
+    validateFieldType(field, errorElement, fieldLabel) {
+        // Email validation
+        if (field.type === 'email' && !isValidEmail(field.value)) {
+            const message = 'Please enter a valid email address';
+            this.addError(field, errorElement, fieldLabel, message);
+            return;
+        }
+        
+        // Age validation
+        if (field.name === 'child-age' && !isValidAge(field.value)) {
+            const message = 'Please enter a valid age (e.g., "18 months", "2 years")';
+            this.addError(field, errorElement, fieldLabel, message);
+            return;
+        }
+    }
+    
+    addError(field, errorElement, fieldLabel, message) {
+        showFieldError(field, errorElement, message);
+        this.errors.push(`${fieldLabel}: ${message}`);
+        this.isValid = false;
+    }
+    
+    getFieldLabel(field) {
+        return this.form.querySelector(`label[for="${field.id}"]`)?.textContent.replace('*', '').trim() || field.name;
+    }
+    
+    handleValidationResults() {
+        if (!this.isValid) {
+            showValidationSummary(this.errors);
+            this.scrollToValidationSummary();
+        }
+    }
+    
+    scrollToValidationSummary() {
         const summary = document.getElementById('validation-summary');
         if (summary) {
             summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     }
-    
-    return isValid;
 }
 
 // Show field error
@@ -191,39 +233,52 @@ export function showSuccessMessage(message) {
     alert(message);
 }
 
-// Setup real-time form validation
+// Setup real-time form validation using event delegation
 function setupFormValidation() {
-    document.querySelectorAll('input, select, textarea').forEach(field => {
-        field.addEventListener('input', function() {
-            const errorElement = document.getElementById(this.name + '-error');
-            clearFieldError(this, errorElement);
-            
-            // Hide validation summary when user starts correcting errors
-            const form = this.closest('form');
-            if (form) {
-                const hasErrors = form.querySelectorAll('[aria-invalid="true"]').length > 1;
-                if (!hasErrors) {
-                    hideValidationSummary();
-                }
-            }
-        });
-        
-        // Real-time validation for specific fields
-        field.addEventListener('blur', function() {
-            const errorElement = document.getElementById(this.name + '-error');
-            const fieldLabel = this.closest('form')?.querySelector(`label[for="${this.id}"]`)?.textContent.replace('*', '').trim();
-            
-            if (this.hasAttribute('required') && !this.value.trim()) {
-                showFieldError(this, errorElement, 'This field is required');
-            } else if (this.type === 'email' && this.value && !isValidEmail(this.value)) {
-                showFieldError(this, errorElement, 'Please enter a valid email address');
-            } else if (this.name === 'child-age' && this.value && !isValidAge(this.value)) {
-                showFieldError(this, errorElement, 'Please enter a valid age (e.g., "18 months", "2 years")');
-            } else {
-                clearFieldError(this, errorElement);
-            }
-        });
-    });
+    // Use event delegation on document for better performance
+    document.addEventListener('input', handleFieldInput);
+    document.addEventListener('blur', handleFieldBlur);
+}
+
+// Handle input events using event delegation
+function handleFieldInput(event) {
+    const field = event.target;
+    if (!isFormField(field)) return;
+    
+    const errorElement = document.getElementById(field.name + '-error');
+    clearFieldError(field, errorElement);
+    
+    // Hide validation summary when user starts correcting errors
+    const form = field.closest('form');
+    if (form) {
+        const hasErrors = form.querySelectorAll('[aria-invalid="true"]').length > 1;
+        if (!hasErrors) {
+            hideValidationSummary();
+        }
+    }
+}
+
+// Handle blur events using event delegation
+function handleFieldBlur(event) {
+    const field = event.target;
+    if (!isFormField(field)) return;
+    
+    const errorElement = document.getElementById(field.name + '-error');
+    
+    if (field.hasAttribute('required') && !field.value.trim()) {
+        showFieldError(field, errorElement, 'This field is required');
+    } else if (field.type === 'email' && field.value && !isValidEmail(field.value)) {
+        showFieldError(field, errorElement, 'Please enter a valid email address');
+    } else if (field.name === 'child-age' && field.value && !isValidAge(field.value)) {
+        showFieldError(field, errorElement, 'Please enter a valid age (e.g., "18 months", "2 years")');
+    } else {
+        clearFieldError(field, errorElement);
+    }
+}
+
+// Check if element is a form field we want to validate
+function isFormField(element) {
+    return element.matches('input, select, textarea') && element.form;
 }
 
 // Setup scroll animations
@@ -303,15 +358,33 @@ export function showLoadingMessage(message) {
         align-items: center; z-index: 3000;
     `;
     
-    modal.innerHTML = `
-        <div style="background: white; padding: 3rem; border-radius: 15px; text-align: center; max-width: 400px;">
-            <div style="margin-bottom: 2rem;">
-                <div style="border: 4px solid #f3f3f3; border-top: 4px solid #FF6B9D; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-            </div>
-            <h3 style="color: #FF6B9D; margin-bottom: 1rem;">${message}</h3>
-            <p style="color: #666;">Please wait while we process your booking...</p>
-        </div>
-    `;
+    // Create modal content safely
+    const modalContent = createSafeElement('div', '', {
+        style: 'background: white; padding: 3rem; border-radius: 15px; text-align: center; max-width: 400px;'
+    });
+    
+    // Spinner container
+    const spinnerContainer = createSafeElement('div', '', {
+        style: 'margin-bottom: 2rem;'
+    });
+    const spinner = createSafeElement('div', '', {
+        style: 'border: 4px solid #f3f3f3; border-top: 4px solid #FF6B9D; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;'
+    });
+    spinnerContainer.appendChild(spinner);
+    
+    // Message elements
+    const title = createSafeElement('h3', sanitizeHTML(message), {
+        style: 'color: #FF6B9D; margin-bottom: 1rem;'
+    });
+    const description = createSafeElement('p', 'Please wait while we process your booking...', {
+        style: 'color: #666;'
+    });
+    
+    modalContent.appendChild(spinnerContainer);
+    modalContent.appendChild(title);
+    modalContent.appendChild(description);
+    
+    modal.appendChild(modalContent);
     
     // Add spinner animation
     const style = document.createElement('style');
@@ -344,30 +417,95 @@ export function showBookingSuccessMessage(bookingData) {
         day: 'numeric'
     });
     
-    modal.innerHTML = `
-        <div style="background: white; padding: 3rem; border-radius: 20px; text-align: center; max-width: 500px; width: 100%;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-            <h2 style="color: #4ECDC4; margin-bottom: 1rem;">Booking Confirmed!</h2>
-            <div style="background: #FFF8F0; padding: 2rem; border-radius: 15px; margin: 2rem 0; text-align: left;">
-                <h3 style="color: #FF6B9D; margin-bottom: 1rem; text-align: center;">Your Session Details</h3>
-                <p><strong>Booking ID:</strong> ${bookingData.bookingId}</p>
-                <p><strong>Child:</strong> ${bookingData.childName}</p>
-                <p><strong>Date:</strong> ${formattedDate}</p>
-                <p><strong>Venue:</strong> ${bookingData.venue}</p>
-                <p><strong>Time:</strong> ${bookingData.time}</p>
-            </div>
-            <div style="background: #e8f5e8; padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0;">
-                <p style="margin: 0; color: #2e7d32;"><strong>📧 Confirmation email sent to:</strong> ${bookingData.email}</p>
-            </div>
-            <p style="color: #666; margin-bottom: 2rem;">Please check your email for full details and instructions. We can't wait to see you both!</p>
-            <button onclick="window.closeSuccessModal()" style="background: linear-gradient(135deg, #4ECDC4, #FF6B9D); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; font-weight: bold;">
-                Close
-            </button>
-        </div>
-    `;
+    // Sanitize booking data
+    const safeBookingData = sanitizeFormData(bookingData);
+    
+    // Create modal content safely
+    const modalContent = createBookingSuccessModalContent(safeBookingData, formattedDate);
+    modal.appendChild(modalContent);
     
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
+}
+
+// Create booking success modal content safely
+function createBookingSuccessModalContent(bookingData, formattedDate) {
+    const modalContent = createSafeElement('div', '', {
+        style: 'background: white; padding: 3rem; border-radius: 20px; text-align: center; max-width: 500px; width: 100%;'
+    });
+    
+    // Celebration emoji
+    const emoji = createSafeElement('div', '🎉', {
+        style: 'font-size: 4rem; margin-bottom: 1rem;'
+    });
+    
+    // Title
+    const title = createSafeElement('h2', 'Booking Confirmed!', {
+        style: 'color: #4ECDC4; margin-bottom: 1rem;'
+    });
+    
+    // Session details container
+    const detailsContainer = createSafeElement('div', '', {
+        style: 'background: #FFF8F0; padding: 2rem; border-radius: 15px; margin: 2rem 0; text-align: left;'
+    });
+    
+    const detailsTitle = createSafeElement('h3', 'Your Session Details', {
+        style: 'color: #FF6B9D; margin-bottom: 1rem; text-align: center;'
+    });
+    
+    const details = [
+        { label: 'Booking ID:', value: bookingData.bookingId },
+        { label: 'Child:', value: bookingData.childName },
+        { label: 'Date:', value: formattedDate },
+        { label: 'Venue:', value: bookingData.venue },
+        { label: 'Time:', value: bookingData.time }
+    ];
+    
+    detailsContainer.appendChild(detailsTitle);
+    
+    details.forEach(detail => {
+        const p = createSafeElement('p');
+        const label = createSafeElement('strong', detail.label);
+        const value = createSafeElement('span', ` ${detail.value}`);
+        p.appendChild(label);
+        p.appendChild(value);
+        detailsContainer.appendChild(p);
+    });
+    
+    // Email confirmation
+    const emailContainer = createSafeElement('div', '', {
+        style: 'background: #e8f5e8; padding: 1.5rem; border-radius: 10px; margin: 1.5rem 0;'
+    });
+    
+    const emailP = createSafeElement('p', '', {
+        style: 'margin: 0; color: #2e7d32;'
+    });
+    const emailLabel = createSafeElement('strong', '📧 Confirmation email sent to:');
+    const emailValue = createSafeElement('span', ` ${bookingData.email}`);
+    emailP.appendChild(emailLabel);
+    emailP.appendChild(emailValue);
+    emailContainer.appendChild(emailP);
+    
+    // Instructions
+    const instructions = createSafeElement('p', 'Please check your email for full details and instructions. We can\'t wait to see you both!', {
+        style: 'color: #666; margin-bottom: 2rem;'
+    });
+    
+    // Close button
+    const closeBtn = createSafeElement('button', 'Close', {
+        style: 'background: linear-gradient(135deg, #4ECDC4, #FF6B9D); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; font-weight: bold;'
+    });
+    
+    closeBtn.addEventListener('click', closeSuccessModal);
+    
+    modalContent.appendChild(emoji);
+    modalContent.appendChild(title);
+    modalContent.appendChild(detailsContainer);
+    modalContent.appendChild(emailContainer);
+    modalContent.appendChild(instructions);
+    modalContent.appendChild(closeBtn);
+    
+    return modalContent;
 }
 
 // Close success modal
