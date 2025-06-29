@@ -6,9 +6,9 @@ export const CONTACT_CONFIG = {
         link: 'tel:+447123456789'
     },
     email: {
-        address: 'hello@mummysmessymakers.co.uk',
-        display: 'hello@mummysmessymakers.co.uk',
-        link: 'mailto:hello@mummysmessymakers.co.uk'
+        address: 'hello@mummysmessymakers.com',
+        display: 'hello@mummysmessymakers.com',
+        link: 'mailto:hello@mummysmessymakers.com'
     },
     address: {
         street: '123 Play Street',
