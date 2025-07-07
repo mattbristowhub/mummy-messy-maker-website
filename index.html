@@ -214,14 +214,21 @@
                     </div>
                     <div class="contact-form">
                         <h3>Send us a Message</h3>
-                        <form id="contactForm" novalidate>
+                        <form id="contactForm" action="https://formsubmit.co/hello@mummysmessymakers.com" method="POST">
+                            <!-- FormSubmit.co configuration -->
+                            <input type="hidden" name="_next" value="https://mummysmessymakers.com/">
+                            <input type="hidden" name="_subject" value="New Contact Form Message from Mummy's Messy Makers">
+                            <input type="hidden" name="_replyto" value="email">
+                            <input type="hidden" name="_captcha" value="false">
+                            <input type="text" name="_honey" style="display:none">
+                            
                             <div class="form-group">
                                 <label for="contact-name">Name *</label>
-                                <input type="text" id="contact-name" name="contact-name" required>
+                                <input type="text" id="contact-name" name="name" required>
                             </div>
                             <div class="form-group">
                                 <label for="contact-email">Email *</label>
-                                <input type="email" id="contact-email" name="contact-email" required>
+                                <input type="email" id="contact-email" name="email" required>
                             </div>
                             <div class="form-group">
                                 <label for="message">Message *</label>
@@ -238,7 +245,7 @@
     <footer>
         <div class="container">
             <p>&copy; 2025 Mummy's Messy Makers. All rights reserved. | Registered in England & Wales</p>
-            <p>Sensory play classes for babies and toddlers in London</p>
+            <p>Sensory play classes for babies and toddlers in West Sussex</p>
         </div>
     </footer>
 
@@ -247,8 +254,6 @@
         <!-- Modal content will be populated by JavaScript -->
     </div>
 
-    <!-- EmailJS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
     <!-- JavaScript -->
     <script type="module" src="script.js"></script>

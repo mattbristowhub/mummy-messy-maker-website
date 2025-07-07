@@ -21,15 +21,22 @@ function setupFormHandlers() {
     // Contact form submission
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (validateForm(this)) {
-                showSuccessMessage('Thank you for your message! We will get back to you soon.');
-                this.reset();
+            // Only prevent default if form validation fails
+            if (!validateForm(this)) {
+                e.preventDefault();
+                return;
             }
+            
+            // If validation passes, let the form submit naturally to FormSubmit.co
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
         });
     }
 }
+
 
 // Export functions to global scope for onclick handlers if needed
 window.closeSuccessModal = closeSuccessModal;
