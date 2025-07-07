@@ -25,20 +25,3 @@ export { CONTACT_CONFIG };
 // DEPRECATED: Use BOOKING_CONFIG_MERGED instead
 export const BOOKING_CONFIG_LEGACY = BOOKING_CONFIG_MERGED;
 
-// EMAIL TEMPLATE VARIABLES (use these in your EmailJS template):
-// {{to_email}} {{to_name}} {{subject}} {{booking_id}} {{child_name}} 
-// {{child_age}} {{venue_name}} {{session_date}} {{session_time}} 
-// {{venue_address}} {{venue_entry}} {{arrival_note}} {{parent_phone}}
-// {{special_requirements}} {{what_to_bring}} {{what_we_provide}} {{important_notes}}
-
-// EmailJS Configuration - MOVED TO ENVIRONMENT CONFIG
-// SECURITY UPDATE: EmailJS configuration has been moved to environment variables
-// for better security. API keys should not be exposed in client-side code.
-// 
-// SETUP INSTRUCTIONS:
-// 1. Copy .env.example to .env
-// 2. Update the environment variables with your EmailJS details
-// 3. Add meta tags to your HTML to pass config securely to client
-// 4. Use envConfig.getEmailJSConfig() to access configuration
-//
-// For backwards compatibility, EMAIL_CONFIG is still exported from env-config.js

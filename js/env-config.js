@@ -27,33 +27,8 @@ class EnvironmentConfig {
         return this.config.has(key.toUpperCase());
     }
     
-    // Get EmailJS configuration safely
-    getEmailJSConfig() {
-        return {
-            serviceId: this.get('EMAILJS_SERVICE_ID'),
-            templateId: this.get('EMAILJS_TEMPLATE_ID'),
-            publicKey: this.get('EMAILJS_PUBLIC_KEY'),
-            enabled: this.get('EMAILJS_ENABLED', 'false') === 'true'
-        };
-    }
-    
-    // Validate required configuration
-    validateEmailJSConfig() {
-        const config = this.getEmailJSConfig();
-        const required = ['serviceId', 'templateId', 'publicKey'];
-        const missing = required.filter(key => !config[key]);
-        
-        if (missing.length > 0) {
-            console.warn(`Missing EmailJS configuration: ${missing.join(', ')}`);
-            return false;
-        }
-        
-        return config.enabled;
-    }
 }
 
 // Create global instance
 export const envConfig = new EnvironmentConfig();
 
-// Legacy export for backwards compatibility
-export const EMAIL_CONFIG = envConfig.getEmailJSConfig();
