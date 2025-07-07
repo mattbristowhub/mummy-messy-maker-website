@@ -21,19 +21,58 @@ function setupFormHandlers() {
     // Contact form submission
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            // Only prevent default if form validation fails
+            e.preventDefault(); // Always prevent default for AJAX submission
+            
+            // Validate form first
             if (!validateForm(this)) {
-                e.preventDefault();
                 return;
             }
             
-            // If validation passes, let the form submit naturally to FormSubmit.co
-            // Show loading state
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Sending...';
-            submitBtn.disabled = true;
+            // Submit via AJAX
+            submitContactForm(this);
         });
+    }
+}
+
+// Submit contact form via AJAX
+async function submitContactForm(form) {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    
+    try {
+        // Show loading state
+        submitBtn.textContent = 'Sending...';
+        submitBtn.disabled = true;
+        
+        // Prepare form data
+        const formData = new FormData(form);
+        
+        // Submit to FormSubmit.co
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            // Success - show success message
+            showSuccessMessage('Thank you for your message! We will get back to you soon.');
+            form.reset(); // Clear the form
+        } else {
+            // Error response from FormSubmit.co
+            throw new Error('Form submission failed');
+        }
+        
+    } catch (error) {
+        console.error('Form submission error:', error);
+        // Show error message
+        showSuccessMessage('Sorry, there was an error sending your message. Please try again or contact us directly at hello@mummysmessymakers.com');
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
 }
 

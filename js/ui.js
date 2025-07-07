@@ -229,8 +229,63 @@ function isValidAge(ageStr) {
 
 // Show success message
 export function showSuccessMessage(message) {
-    // In a real implementation, you might want to show a nicer modal or notification
-    alert(message);
+    showContactSuccessMessage(message);
+}
+
+// Show contact form success message
+function showContactSuccessMessage(message) {
+    // Remove any existing modal
+    const existingModal = document.getElementById('contactSuccessModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    const modal = document.createElement('div');
+    modal.id = 'contactSuccessModal';
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.8); display: flex; justify-content: center;
+        align-items: center; z-index: 3000; padding: 2rem;
+    `;
+    
+    // Create modal content safely
+    const modalContent = createSafeElement('div', '', {
+        style: 'background: white; padding: 3rem; border-radius: 20px; text-align: center; max-width: 500px; width: 100%;'
+    });
+    
+    // Success emoji
+    const emoji = createSafeElement('div', '✅', {
+        style: 'font-size: 4rem; margin-bottom: 1rem;'
+    });
+    
+    // Title
+    const title = createSafeElement('h2', 'Message Sent!', {
+        style: 'color: #4ECDC4; margin-bottom: 1rem;'
+    });
+    
+    // Message
+    const messageP = createSafeElement('p', sanitizeHTML(message), {
+        style: 'color: #666; margin-bottom: 2rem; line-height: 1.6;'
+    });
+    
+    // Close button
+    const closeBtn = createSafeElement('button', 'Close', {
+        style: 'background: linear-gradient(135deg, #4ECDC4, #FF6B9D); color: white; border: none; padding: 15px 30px; border-radius: 25px; font-size: 1.1rem; cursor: pointer; font-weight: bold;'
+    });
+    
+    closeBtn.addEventListener('click', () => {
+        modal.remove();
+        document.body.style.overflow = 'auto';
+    });
+    
+    modalContent.appendChild(emoji);
+    modalContent.appendChild(title);
+    modalContent.appendChild(messageP);
+    modalContent.appendChild(closeBtn);
+    
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
 }
 
 // Setup real-time form validation using event delegation
