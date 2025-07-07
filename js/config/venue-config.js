@@ -4,7 +4,7 @@ export const VENUE_CONFIG = {
         monday: {
             name: 'Bersted Jubilee Hall',
             day: 'Monday',
-            time: '10:00am - 11:00am',
+            time: '10:00am - 10:45am',
             address: 'PO21 5TU',
             entry: 'Main double doors, turn right',
             startTime: '10:00am',
@@ -13,7 +13,7 @@ export const VENUE_CONFIG = {
         friday: {
             name: 'Felpham Memorial Village Hall',
             day: 'Friday',
-            time: '09:30am - 10:30am',
+            time: '09:30am - 10:15am',
             address: 'PO22 7DZ',
             entry: 'Main double doors into main hall',
             startTime: '09:30am',
