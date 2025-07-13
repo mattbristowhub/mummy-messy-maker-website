@@ -6,7 +6,7 @@ export const VENUE_CONFIG = {
             day: 'Monday',
             time: '10:00am - 10:45am',
             address: 'PO21 5TU',
-            entry: 'Main double doors, turn right',
+            entry: 'Main double doors, take a left and then a right to the meeting room',
             startTime: '10:00am',
             arrivalNote: 'Arrive early for 10:00am prompt start'
         },
